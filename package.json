@@ -1,0 +1,46 @@
+{
+  "name": "@hexlet/code",
+  "version": "0.0.1",
+  "type": "module",
+  "description": "Checking files for changes (training project)",
+  "bin": {
+    "gendiff": "bin/gendiff.js"
+  },
+  "engines": {
+    "node": ">=14"
+  },
+  "scripts": {
+    "test": "npx jest --bail",
+    "start": "node bin/gendiff.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FFire/frontend-project-lvl2.git"
+  },
+  "keywords": [
+    "diff",
+    "json",
+    "yaml",
+    "text"
+  ],
+  "author": "Aleksandr Belan",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/FFire/frontend-project-lvl2/issues"
+  },
+  "homepage": "https://github.com/FFire/frontend-project-lvl2#readme",
+  "dependencies": {
+    "commander": "^8.1.0",
+    "lodash": "^4.17.21"
+  },
+  "devDependencies": {
+    "eslint": "^7.32.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-config-node": "^4.1.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-import": "^2.24.1",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-prettier": "^3.4.1",
+    "prettier": "^2.3.2"
+  }
+}

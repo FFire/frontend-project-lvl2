@@ -1,0 +1,4 @@
+# .prettierrc or .prettierrc.yaml
+# bracketSpacing: true
+singleQuote: true
+printWidth: 100
