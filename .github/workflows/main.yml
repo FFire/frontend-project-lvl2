@@ -18,7 +18,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - name: Developer CI
+      - name: Install Node JS
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
