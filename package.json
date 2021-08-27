@@ -11,8 +11,7 @@
     "node": ">=14"
   },
   "scripts": {
-    "test": "npx jest --bail",
-    "start": "node bin/gendiff.js"
+    "test": "npx jest --bail"
   },
   "repository": {
     "type": "git",
