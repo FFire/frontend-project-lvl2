@@ -25,10 +25,10 @@ const states = {
   UNCHANGED: 'unchanged',
 };
 
-const makeDiff = (key, value1, value2, state) => ({
-  path: [key],
+const makeDiff = (value1, value2, key, state) => ({
   value1,
   value2,
+  keys: [key],
   state,
 });
 
@@ -39,25 +39,63 @@ const getState = (obj1, obj2, key) => {
   return states.UNCHANGED;
 };
 
-const objectsDiff = (obj1, obj2) => {
+const makeDiffs = (obj1, obj2) => {
   const keys1 = _.keys(obj1);
   const keys2 = _.keys(obj2);
   const keys = _.union(keys1, keys2).sort();
 
   return keys.map((key) => {
     const state = getState(obj1, obj2, key);
-    return makeDiff(key, obj1[key], obj2[key], state);
+    return makeDiff(obj1[key], obj2[key], key, state);
   });
 };
 
-const mainAction = (filepath1, filepath2, options = { format: 'text' }) => {
+const makeSigns = () => {
+  const signs = {};
+  signs[states.CREATED] = '+';
+  signs[states.DELETED] = '-';
+  signs[states.UNCHANGED] = ' ';
+  return signs;
+};
+
+const diffToString = (sign, keys, value) => {
+  _.noop();
+  return `  ${sign} ${keys}: ${value}`;
+};
+
+const formatAsText = (diffs) => {
+  const signs = makeSigns();
+
+  const diffStrings = diffs.reduce((acc, diff) => {
+    const { value1, value2, state } = diff;
+    const keys = diff.keys.join('');
+    if (state === states.CREATED || state === states.UNCHANGED) {
+      const sign = signs[state];
+      acc.push(diffToString(sign, keys, value2));
+    }
+    if (state === states.DELETED || state === states.CHANGED) {
+      const sign = signs[states.DELETED];
+      acc.push(diffToString(sign, keys, value1));
+    }
+    if (state === states.CHANGED) {
+      const sign = signs[states.CREATED];
+      acc.push(diffToString(sign, keys, value2));
+    }
+    return acc;
+  }, []);
+
+  return ['{', ...diffStrings, '}'].join('\n');
+};
+
+const mainAction = (filepath1, filepath2, options) => {
   const obj1 = getObject(filepath1);
   const obj2 = getObject(filepath2);
 
-  const diffObjects = objectsDiff(obj1, obj2);
-  console.log('🚀 > diffObject', diffObjects);
+  const diffs = makeDiffs(obj1, obj2, options);
+  const result = formatAsText(diffs);
+  console.log(result);
 
-  return _.noop(options);
+  return result;
 };
 
 export default mainAction;
