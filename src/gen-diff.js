@@ -4,7 +4,7 @@ import * as fs from 'fs';
 
 const getAbsFilePath = (filePath) => {
   const absFilePath = path.resolve(filePath);
-  if (!fs.existsSync(absFilePath)) throw new Error('File do not exist.');
+  if (!fs.existsSync(absFilePath)) throw new Error(`File do not exist: ${absFilePath}`);
   return absFilePath;
 };
 
@@ -91,10 +91,11 @@ const formatAsText = (diffs) => {
 };
 
 const genDiff = (filepath1, filepath2, options) => {
+  if (filepath1 === undefined) throw new Error("error: missing required argument 'filepath1'");
+  if (filepath2 === undefined) throw new Error("error: missing required argument 'filepath2'");
   const obj1 = getObject(filepath1);
   const obj2 = getObject(filepath2);
   const diffs = makeDiffs(obj1, obj2, options);
-
   return formatAsText(diffs);
 };
 
