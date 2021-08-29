@@ -46,7 +46,10 @@ const makeDiffs = (obj1, obj2) => {
 
   return keys.map((key) => {
     const state = getState(obj1, obj2, key);
-    return makeDiff(obj1[key], obj2[key], key, state);
+    const value1 = obj1[key];
+    const value2 = obj2[key];
+
+    return makeDiff(value1, value2, key, state);
   });
 };
 
@@ -87,15 +90,12 @@ const formatAsText = (diffs) => {
   return ['{', ...diffStrings, '}'].join('\n');
 };
 
-const mainAction = (filepath1, filepath2, options) => {
+const genDiff = (filepath1, filepath2, options) => {
   const obj1 = getObject(filepath1);
   const obj2 = getObject(filepath2);
-
   const diffs = makeDiffs(obj1, obj2, options);
-  const result = formatAsText(diffs);
-  console.log(result);
 
-  return result;
+  return formatAsText(diffs);
 };
 
-export default mainAction;
+export default genDiff;
