@@ -2,7 +2,7 @@
   "name": "@hexlet/code",
   "version": "0.0.1",
   "type": "module",
-  "main": "bin/gendiff.js",
+  "main": "index.js",
   "description": "Checking files for changes (training project)",
   "bin": {
     "gendiff": "bin/gendiff.js"
