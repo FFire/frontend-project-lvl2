@@ -2,17 +2,20 @@
   "name": "@hexlet/code",
   "version": "0.0.1",
   "type": "module",
-  "main": "bin/gendiff.js",
+  "main": "index.js",
   "description": "Checking files for changes (training project)",
   "bin": {
     "gendiff": "bin/gendiff.js"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "transform": {}
   },
   "engines": {
     "node": ">=14"
   },
   "scripts": {
-    "test": "npx jest --bail",
-    "start": "node bin/gendiff.js"
+    "test": "npx jest --bail"
   },
   "repository": {
     "type": "git",
