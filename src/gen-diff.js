@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import * as path from 'path';
 import * as fs from 'fs';
+import parseFile from './parsers.js';
 
 const getAbsFilePath = (filePath) => {
   const absFilePath = path.resolve(filePath);
@@ -10,12 +11,11 @@ const getAbsFilePath = (filePath) => {
 
 const readFilePath = (absFilepath) => fs.readFileSync(absFilepath, 'utf8');
 
-const parseJson = (rawFile) => JSON.parse(rawFile);
-
 const getObject = (filePath) => {
-  const absFilePath = getAbsFilePath(filePath);
+  const absFilePath = getAbsFilePath(filePath.toLowerCase());
+  const extName = path.extname(filePath);
   const rawFile = readFilePath(absFilePath);
-  return parseJson(rawFile);
+  return parseFile(rawFile, extName);
 };
 
 const states = {
