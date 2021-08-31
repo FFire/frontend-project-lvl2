@@ -3,46 +3,45 @@ import * as path from 'path';
 import * as fs from 'fs';
 import parseFile from './parsers.js';
 
-const getAbsFilePath = (filePath) => {
+export const getAbsFilePath = (filePath) => {
   const absFilePath = path.resolve(filePath);
   if (!fs.existsSync(absFilePath)) throw new Error(`File do not exist: ${absFilePath}`);
   return absFilePath;
 };
 
-const readFilePath = (absFilepath) => fs.readFileSync(absFilepath, 'utf8');
+export const readFilePath = (absFilepath) => fs.readFileSync(absFilepath, 'utf8');
 
-const getObject = (filePath) => {
+export const getObject = (filePath) => {
   const absFilePath = getAbsFilePath(filePath.toLowerCase());
   const extName = path.extname(filePath);
   const rawFile = readFilePath(absFilePath);
   return parseFile(rawFile, extName);
 };
 
-const states = {
+export const states = {
   CREATED: 'created',
   DELETED: 'deleted',
   CHANGED: 'changed',
   UNCHANGED: 'unchanged',
 };
 
-const makeDiff = (value1, value2, key, state) => ({
+export const makeDiff = (value1, value2, property, state) => ({
   value1,
   value2,
-  keys: [key],
+  property,
   state,
+  children: {},
 });
 
-const getState = (obj1, obj2, key) => {
+export const getState = (obj1, obj2, key) => {
   if (!_.has(obj1, key)) return states.CREATED;
   if (!_.has(obj2, key)) return states.DELETED;
   if (obj1[key] !== obj2[key]) return states.CHANGED;
   return states.UNCHANGED;
 };
 
-const makeDiffs = (obj1, obj2) => {
-  const keys1 = _.keys(obj1);
-  const keys2 = _.keys(obj2);
-  const keys = _.union(keys1, keys2).sort();
+export const makeDiffs = (obj1, obj2) => {
+  const keys = { ...obj1, ...obj2 };
 
   return keys.map((key) => {
     const state = getState(obj1, obj2, key);
@@ -53,7 +52,7 @@ const makeDiffs = (obj1, obj2) => {
   });
 };
 
-const makeSigns = () => {
+export const makeSigns = () => {
   const signs = {};
   signs[states.CREATED] = '+';
   signs[states.DELETED] = '-';
@@ -61,28 +60,27 @@ const makeSigns = () => {
   return signs;
 };
 
-const diffToString = (sign, keys, value) => {
+const diffToString = (sign, property, value) => {
   _.noop();
-  return `  ${sign} ${keys}: ${value}`;
+  return `  ${sign} ${property}: ${value}`;
 };
 
-const formatAsText = (diffs) => {
+export const formatAsText = (diffs) => {
   const signs = makeSigns();
 
   const diffStrings = diffs.reduce((acc, diff) => {
-    const { value1, value2, state } = diff;
-    const keys = diff.keys.join('');
+    const { value1, value2, state, property } = diff;
     if (state === states.CREATED || state === states.UNCHANGED) {
       const sign = signs[state];
-      acc.push(diffToString(sign, keys, value2));
+      acc.push(diffToString(sign, property, value2));
     }
     if (state === states.DELETED || state === states.CHANGED) {
       const sign = signs[states.DELETED];
-      acc.push(diffToString(sign, keys, value1));
+      acc.push(diffToString(sign, property, value1));
     }
     if (state === states.CHANGED) {
       const sign = signs[states.CREATED];
-      acc.push(diffToString(sign, keys, value2));
+      acc.push(diffToString(sign, property, value2));
     }
     return acc;
   }, []);
@@ -99,4 +97,5 @@ const genDiff = (filepath1, filepath2, options) => {
   return formatAsText(diffs);
 };
 
+console.log(genDiff('__fixtures__/file1.json', '__fixtures__/file2.json'));
 export default genDiff;
