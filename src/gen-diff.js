@@ -41,7 +41,7 @@ export const getState = (obj1, obj2, key) => {
 };
 
 export const makeDiffs = (obj1, obj2) => {
-  const keys = { ...obj1, ...obj2 };
+  const keys = _.merge({}, obj1, obj2);
 
   return keys.map((key) => {
     const state = getState(obj1, obj2, key);
