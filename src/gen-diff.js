@@ -1,58 +1,80 @@
+// @ts-check
+
 import _ from 'lodash';
 import * as path from 'path';
 import * as fs from 'fs';
 import parseFile from './parsers.js';
 
-export const getAbsFilePath = (filePath) => {
+const getFileAbsPath = (filePath) => {
   const absFilePath = path.resolve(filePath);
   if (!fs.existsSync(absFilePath)) throw new Error(`File do not exist: ${absFilePath}`);
   return absFilePath;
 };
 
-export const readFilePath = (absFilepath) => fs.readFileSync(absFilepath, 'utf8');
+const readFile = (absFilepath) => fs.readFileSync(absFilepath, 'utf8');
 
-export const getObject = (filePath) => {
-  const absFilePath = getAbsFilePath(filePath.toLowerCase());
+const getObject = (filePath) => {
+  const absFilePath = getFileAbsPath(filePath.toLowerCase());
   const extName = path.extname(filePath);
-  const rawFile = readFilePath(absFilePath);
+  const rawFile = readFile(absFilePath);
   return parseFile(rawFile, extName);
 };
 
-export const states = {
+const states = {
   CREATED: 'created',
   DELETED: 'deleted',
   CHANGED: 'changed',
   UNCHANGED: 'unchanged',
 };
 
-export const makeDiff = (value1, value2, property, state) => ({
-  value1,
-  value2,
-  property,
-  state,
-  children: {},
-});
+const makeDiff = (propName, state, values, children = []) => {
+  _.noop();
+  const diffObject = {
+    propName,
+    state,
+    values,
+    children,
+  };
+  return diffObject;
+};
 
-export const getState = (obj1, obj2, key) => {
-  if (!_.has(obj1, key)) return states.CREATED;
-  if (!_.has(obj2, key)) return states.DELETED;
-  if (obj1[key] !== obj2[key]) return states.CHANGED;
+const getState = (obj1, obj2, treePath) => {
+  if (!_.has(obj1, treePath)) return states.CREATED;
+  if (!_.has(obj2, treePath)) return states.DELETED;
+  if (_.get(obj1, treePath) !== _.get(obj2, treePath)) return states.CHANGED;
   return states.UNCHANGED;
 };
 
-export const makeDiffs = (obj1, obj2) => {
-  const keys = _.merge({}, obj1, obj2);
+const makeDiffs = (obj1, obj2) => {
+  const fullTree = _.merge({}, obj1, obj2);
 
-  return keys.map((key) => {
-    const state = getState(obj1, obj2, key);
-    const value1 = obj1[key];
-    const value2 = obj2[key];
+  const differences = (tree = {}, treePath = []) => {
+    const entries = Object.entries(tree).sort();
+    const result = entries.reduce((acc, [treeKey, treeValue]) => {
+      const currPath = [...treePath, treeKey];
+      if (_.isPlainObject(treeValue)) {
+        const state = states.UNCHANGED;
+        const values = [undefined, undefined];
+        acc.push(makeDiff(treeKey, state, values, differences(treeValue, currPath)));
+      } else {
+        const value1 = _.get(obj1, currPath);
+        const value2 = _.get(obj2, currPath);
+        const state = getState(obj1, obj2, currPath);
+        const values = [value1, value2];
+        acc.push(makeDiff(treeKey, state, values));
+      }
+      return acc;
+    }, []);
 
-    return makeDiff(value1, value2, key, state);
-  });
+    return result;
+  };
+
+  return differences(fullTree);
 };
 
-export const makeSigns = () => {
+// #region output format (first version)
+/*
+const makeSigns = () => {
   const signs = {};
   signs[states.CREATED] = '+';
   signs[states.DELETED] = '-';
@@ -65,11 +87,13 @@ const diffToString = (sign, property, value) => {
   return `  ${sign} ${property}: ${value}`;
 };
 
-export const formatAsText = (diffs) => {
+const formatAsText = (diffs) => {
   const signs = makeSigns();
 
   const diffStrings = diffs.reduce((acc, diff) => {
-    const { value1, value2, state, property } = diff;
+    const {
+      value1, value2, state, property,
+    } = diff;
     if (state === states.CREATED || state === states.UNCHANGED) {
       const sign = signs[state];
       acc.push(diffToString(sign, property, value2));
@@ -87,15 +111,20 @@ export const formatAsText = (diffs) => {
 
   return ['{', ...diffStrings, '}'].join('\n');
 };
+*/
+// #endregion
 
 const genDiff = (filepath1, filepath2, options) => {
   if (filepath1 === undefined) throw new Error("error: missing required argument 'filepath1'");
   if (filepath2 === undefined) throw new Error("error: missing required argument 'filepath2'");
   const obj1 = getObject(filepath1);
   const obj2 = getObject(filepath2);
-  const diffs = makeDiffs(obj1, obj2, options);
-  return formatAsText(diffs);
+  const diffs = makeDiffs(obj1, obj2);
+  _.noop(options);
+  console.log('--------------------------------');
+  console.dir(diffs, { depth: null });
+  // return formatAsText(diffs);
 };
 
-console.log(genDiff('__fixtures__/file1.json', '__fixtures__/file2.json'));
+// genDiff('__fixtures__/file1.json', '__fixtures__/file2.json');
 export default genDiff;
