@@ -4,7 +4,7 @@ import _ from 'lodash';
 import * as path from 'path';
 import * as fs from 'fs';
 import parseFile from './parsers.js';
-import exp from 'constants';
+import formatStylish from './formatStylish.js';
 
 const getFileAbsPath = (filePath) => {
   const absFilePath = path.resolve(filePath);
@@ -114,17 +114,33 @@ const formatAsText = (diffs) => {
 };
 */
 // #endregion
+const defaultOptions = {
+  format: 'stylish',
+};
+
+const formatDiffs = (diffs, options) => {
+  _.noop(options);
+  const result = formatStylish(diffs);
+
+  return result;
+};
 
 const genDiff = (filepath1, filepath2, options) => {
   if (filepath1 === undefined) throw new Error("error: missing required argument 'filepath1'");
   if (filepath2 === undefined) throw new Error("error: missing required argument 'filepath2'");
+  const actualOptions = { ...defaultOptions, ...options };
   const obj1 = getObject(filepath1);
   const obj2 = getObject(filepath2);
   const diffs = makeDiffs(obj1, obj2);
-  _.noop(options);
+  // console.log('--------------------------------');
+  // console.dir(diffs, { depth: null });
+  return formatDiffs(diffs, actualOptions);
+};
+
+export const genDiffToConsole = (filepath1, filepath2, options) => {
+  const formatedDiffs = genDiff(filepath1, filepath2, options);
   console.log('--------------------------------');
-  console.dir(diffs, { depth: null });
-  // return formatAsText(diffs);
+  console.log(formatedDiffs);
 };
 
 // genDiff('__fixtures__/file1.json', '__fixtures__/file2.json');
