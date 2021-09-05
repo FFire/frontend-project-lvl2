@@ -1,42 +1,17 @@
 // @ts-check
 
 import _ from 'lodash';
-import * as path from 'path';
-import * as fs from 'fs';
 import parseFile from './parsers.js';
 import formatStylish from './formatStylish.js';
-
-const getFileAbsPath = (filePath) => {
-  const absFilePath = path.resolve(filePath);
-  if (!fs.existsSync(absFilePath)) throw new Error(`File do not exist: ${absFilePath}`);
-  return absFilePath;
-};
-
-const readFile = (absFilepath) => fs.readFileSync(absFilepath, 'utf8');
+import states from './states.js';
+import { getFileAbsPath, getExtName, readFile } from './readFileUtils.js';
+import { makeDiff } from './diffsAPI.js';
 
 const getObject = (filePath) => {
   const absFilePath = getFileAbsPath(filePath.toLowerCase());
-  const extName = path.extname(filePath);
+  const extName = getExtName(filePath);
   const rawFile = readFile(absFilePath);
   return parseFile(rawFile, extName);
-};
-
-const states = {
-  CREATED: 'created',
-  DELETED: 'deleted',
-  CHANGED: 'changed',
-  UNCHANGED: 'unchanged',
-};
-
-const makeDiff = (propName, state, values, children = []) => {
-  _.noop();
-  const diffObject = {
-    propName,
-    state,
-    values,
-    children,
-  };
-  return diffObject;
 };
 
 const getState = (obj1, obj2, treePath) => {
@@ -49,28 +24,29 @@ const getState = (obj1, obj2, treePath) => {
 const makeDiffs = (obj1, obj2) => {
   const fullTree = _.merge({}, obj1, obj2);
 
+  const emptyValues = [undefined, undefined];
+
   const differences = (tree = {}, treePath = []) => {
     const entries = Object.entries(tree).sort();
     const result = entries.reduce((acc, [treeKey, treeValue]) => {
       const currPath = [...treePath, treeKey];
+      const depth = currPath.length;
+      const state = getState(obj1, obj2, currPath);
       if (_.isPlainObject(treeValue)) {
-        const state = states.UNCHANGED;
-        const values = [undefined, undefined];
-        acc.push(makeDiff(treeKey, state, values, differences(treeValue, currPath)));
+        acc.push(makeDiff(treeKey, state, emptyValues, depth, differences(treeValue, currPath)));
       } else {
         const value1 = _.get(obj1, currPath);
         const value2 = _.get(obj2, currPath);
-        const state = getState(obj1, obj2, currPath);
         const values = [value1, value2];
-        acc.push(makeDiff(treeKey, state, values));
+        acc.push(makeDiff(treeKey, state, values, depth));
       }
       return acc;
     }, []);
 
     return result;
   };
-
-  return differences(fullTree);
+  const result = makeDiff('root', states.UNCHANGED, emptyValues, 0, differences(fullTree));
+  return [result];
 };
 
 // #region output format (first version)
@@ -120,6 +96,7 @@ const defaultOptions = {
 
 const formatDiffs = (diffs, options) => {
   _.noop(options);
+  // console.dir(diffs, { depth: null });
   const result = formatStylish(diffs);
 
   return result;
@@ -132,14 +109,12 @@ const genDiff = (filepath1, filepath2, options) => {
   const obj1 = getObject(filepath1);
   const obj2 = getObject(filepath2);
   const diffs = makeDiffs(obj1, obj2);
-  // console.log('--------------------------------');
-  // console.dir(diffs, { depth: null });
   return formatDiffs(diffs, actualOptions);
 };
 
 export const genDiffToConsole = (filepath1, filepath2, options) => {
   const formatedDiffs = genDiff(filepath1, filepath2, options);
-  console.log('--------------------------------');
+  // console.log('--------------------------------');
   console.log(formatedDiffs);
 };
 
