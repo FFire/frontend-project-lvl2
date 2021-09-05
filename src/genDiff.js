@@ -4,6 +4,7 @@ import _ from 'lodash';
 import * as path from 'path';
 import * as fs from 'fs';
 import parseFile from './parsers.js';
+import exp from 'constants';
 
 const getFileAbsPath = (filePath) => {
   const absFilePath = path.resolve(filePath);
