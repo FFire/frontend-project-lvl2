@@ -22,7 +22,7 @@ const getState = (obj1, obj2, treePath) => {
 };
 
 const makeDiffs = (obj1, obj2) => {
-  const fullTree = _.merge({}, obj1, obj2);
+  const fullTree = _.defaultsDeep({}, obj1, obj2);
 
   const emptyValues = [undefined, undefined];
 
@@ -31,13 +31,16 @@ const makeDiffs = (obj1, obj2) => {
     const result = entries.reduce((acc, [treeKey, treeValue]) => {
       const currPath = [...treePath, treeKey];
       const depth = currPath.length;
+      const value1 = _.get(obj1, currPath);
+      const value2 = _.get(obj2, currPath);
+      const values = [value1, value2];
       const state = getState(obj1, obj2, currPath);
       if (_.isPlainObject(treeValue)) {
-        acc.push(makeDiff(treeKey, state, emptyValues, depth, differences(treeValue, currPath)));
+        acc.push(
+          makeDiff(treeKey, state, values, depth,
+            differences(treeValue, currPath)),
+        );
       } else {
-        const value1 = _.get(obj1, currPath);
-        const value2 = _.get(obj2, currPath);
-        const values = [value1, value2];
         acc.push(makeDiff(treeKey, state, values, depth));
       }
       return acc;
@@ -49,54 +52,13 @@ const makeDiffs = (obj1, obj2) => {
   return [result];
 };
 
-// #region output format (first version)
-/*
-const makeSigns = () => {
-  const signs = {};
-  signs[states.CREATED] = '+';
-  signs[states.DELETED] = '-';
-  signs[states.UNCHANGED] = ' ';
-  return signs;
-};
-
-const diffToString = (sign, property, value) => {
-  _.noop();
-  return `  ${sign} ${property}: ${value}`;
-};
-
-const formatAsText = (diffs) => {
-  const signs = makeSigns();
-
-  const diffStrings = diffs.reduce((acc, diff) => {
-    const {
-      value1, value2, state, property,
-    } = diff;
-    if (state === states.CREATED || state === states.UNCHANGED) {
-      const sign = signs[state];
-      acc.push(diffToString(sign, property, value2));
-    }
-    if (state === states.DELETED || state === states.CHANGED) {
-      const sign = signs[states.DELETED];
-      acc.push(diffToString(sign, property, value1));
-    }
-    if (state === states.CHANGED) {
-      const sign = signs[states.CREATED];
-      acc.push(diffToString(sign, property, value2));
-    }
-    return acc;
-  }, []);
-
-  return ['{', ...diffStrings, '}'].join('\n');
-};
-*/
-// #endregion
 const defaultOptions = {
   format: 'stylish',
 };
 
 const formatDiffs = (diffs, options) => {
   _.noop(options);
-  // console.dir(diffs, { depth: null });
+  console.dir(diffs, { depth: null });
   const result = formatStylish(diffs);
 
   return result;
@@ -118,5 +80,5 @@ export const genDiffToConsole = (filepath1, filepath2, options) => {
   console.log(formatedDiffs);
 };
 
-// genDiff('__fixtures__/file1.json', '__fixtures__/file2.json');
+genDiff('__fixtures__/file1short.json', '__fixtures__/file2short.json');
 export default genDiff;

@@ -17,67 +17,77 @@ const makeSigns = () => {
 
 const signs = makeSigns();
 
-// const zeroPad = (num, places) => String(num).padStart(places, ' ');
 const makeCloseString = (depth) => {
   const closeBracket = '}';
   const leftMargin = depth * tabSize + 1;
+  // todo remove backtickle
   return `${_.padStart(closeBracket, leftMargin)}`;
 };
 
-const makeParentStr = (state, propName, depth) => {
+const makeParentStr = (state, propName, depth, drawSign) => {
   const openBracket = '{';
-  const sign = signs[state];
+  const sign = (drawSign === 'no')
+    ? signs[states.UNCHANGED]
+    : signs[state];
   const leftMargin = depth * tabSize - 1;
   const signStr = (depth > 0) ? `${_.padStart(sign, leftMargin)} ` : '';
   const propNameStr = (depth > 0) ? `${propName}: ` : '';
+  // todo remove backtickle
   return `${signStr}${propNameStr}${openBracket}`;
 };
 
-const makeChildStr = (state, propName, values, depth) => {
+const makeChildStr = (state, propName, values, depth, drawSign) => {
   const makeSignStr = (currState) => {
-    const sign = signs[currState];
+    const sign = (drawSign === 'no')
+      ? signs[states.UNCHANGED]
+      : signs[currState];
     const leftMargin = depth * tabSize - 1;
+    // todo remove backtickle
     const signStr = `${_.padStart(sign, leftMargin)} `;
     return signStr;
   };
+
+  const formatString = (sign, property, value) => {
+    _.noop();
+    return `${sign}${property}: ${value}`;
+  };
+
   const acc = [];
   const [value1, value2] = values;
-  // const signStr = makeSignStr();
   if (state === states.CREATED || state === states.UNCHANGED) {
     const signStr = makeSignStr(state);
-    acc.push(`${signStr}${propName}: ${value2}`);
-    // acc.push(diffToString(sign, property, value2));
+    acc.push(formatString(signStr, propName, value2));
   }
-  if (state === states.DELETED || state === states.CHANGED) {
+  if ((state === states.DELETED || state === states.CHANGED) && !_.isPlainObject(value1)) {
     const signStr = makeSignStr(states.DELETED);
-    acc.push(`${signStr}${propName}: ${value1}`);
-    // const sign = signs[states.DELETED];
-    // acc.push(diffToString(sign, property, value1));
+    acc.push(formatString(signStr, propName, value1));
   }
   if (state === states.CHANGED) {
     const signStr = makeSignStr(states.CREATED);
-    acc.push(`${signStr}${propName}: ${value2}`);
-    // const sign = signs[states.CREATED];
-    // acc.push(diffToString(sign, property, value2));
+    acc.push(formatString(signStr, propName, value2));
   }
 
   return acc;
 };
 
-const formatStylish = (diffs) => {
+const formatStylish = (diffs, drawSign = 'yes') => {
   const result = diffs.reduce((acc, diff) => {
     const diffHasChildren = hasChildren(diff);
     const {
       propName, state, values, depth,
     } = diff;
+    const [, value2] = values;
+    const nextDrawSign = (state !== states.UNCHANGED || drawSign !== 'yes') ? 'no' : 'yes';
 
     if (diffHasChildren) {
-      const formattedString = makeParentStr(state, propName, depth);
-      acc.push(formattedString);
-      acc.push(formatStylish(getChildren(diff)));
+      acc.push(makeParentStr(state, propName, depth, drawSign));
+      acc.push(formatStylish(getChildren(diff), nextDrawSign));
       acc.push(makeCloseString(depth));
+      if (!_.isPlainObject(value2) && state === states.CHANGED) {
+        acc.push(...makeChildStr(state, propName, values, depth, drawSign));
+      }
     } else {
-      acc.push(...makeChildStr(state, propName, values, depth));
+      acc.push(...makeChildStr(state, propName, values, depth, drawSign));
     }
     return _.flattenDeep(acc);
   }, []);
