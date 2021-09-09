@@ -17,7 +17,10 @@ const getObject = (filePath) => {
 const getState = (obj1, obj2, treePath) => {
   if (!_.has(obj1, treePath)) return states.CREATED;
   if (!_.has(obj2, treePath)) return states.DELETED;
-  if (_.get(obj1, treePath) !== _.get(obj2, treePath)) return states.CHANGED;
+  const value1 = _.get(obj1, treePath);
+  const value2 = _.get(obj2, treePath);
+  if (typeof (value1) === 'object' && typeof (value2) === 'object') return states.UNCHANGED;
+  if (value1 !== value2) return states.CHANGED;
   return states.UNCHANGED;
 };
 
