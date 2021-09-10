@@ -5,7 +5,7 @@ import parseFile from './parsers.js';
 import formatStylish from './formatStylish.js';
 import states from './states.js';
 import { getFileAbsPath, getExtName, readFile } from './readFileUtils.js';
-import { makeDiff } from './diffsAPI.js';
+import * as df from './diffsAPI.js';
 
 const getObject = (filePath) => {
   const absFilePath = getFileAbsPath(filePath.toLowerCase());
@@ -15,11 +15,11 @@ const getObject = (filePath) => {
 };
 
 const getState = (obj1, obj2, treePath) => {
-  if (!_.has(obj1, treePath)) return states.CREATED;
-  if (!_.has(obj2, treePath)) return states.DELETED;
-  const value1 = _.get(obj1, treePath);
-  const value2 = _.get(obj2, treePath);
-  if (typeof (value1) === 'object' && typeof (value2) === 'object') return states.UNCHANGED;
+  const value1 = df.getValue(obj1, treePath);
+  const value2 = df.getValue(obj2, treePath);
+  if (!df.hasPath(obj1, treePath)) return states.CREATED;
+  if (!df.hasPath(obj2, treePath)) return states.DELETED;
+  if (df.isObject(value1) && df.isObject(value2)) return states.UNCHANGED;
   if (value1 !== value2) return states.CHANGED;
   return states.UNCHANGED;
 };
@@ -27,31 +27,30 @@ const getState = (obj1, obj2, treePath) => {
 const makeDiffs = (obj1, obj2) => {
   const fullTree = _.defaultsDeep({}, obj1, obj2);
 
-  const emptyValues = [undefined, undefined];
-
   const differences = (tree = {}, treePath = []) => {
     const entries = Object.entries(tree).sort();
     const result = entries.reduce((acc, [treeKey, treeValue]) => {
       const currPath = [...treePath, treeKey];
       const depth = currPath.length;
-      const value1 = _.get(obj1, currPath);
-      const value2 = _.get(obj2, currPath);
+      const value1 = df.getValue(obj1, currPath);
+      const value2 = df.getValue(obj2, currPath);
       const values = [value1, value2];
       const state = getState(obj1, obj2, currPath);
-      if (_.isPlainObject(treeValue)) {
+      if (df.isObject(treeValue)) {
         acc.push(
-          makeDiff(treeKey, state, values, depth,
+          df.makeDiff(treeKey, state, values, depth,
             differences(treeValue, currPath)),
         );
       } else {
-        acc.push(makeDiff(treeKey, state, values, depth));
+        acc.push(df.makeDiff(treeKey, state, values, depth));
       }
       return acc;
     }, []);
 
     return result;
   };
-  const result = makeDiff('root', states.UNCHANGED, emptyValues, 0, differences(fullTree));
+
+  const result = df.makeDiff('root', states.UNCHANGED, df.emptyValues, 0, differences(fullTree));
   return [result];
 };
 

@@ -1,7 +1,7 @@
 // @ts-check
 
 import _ from 'lodash';
-import { getChildren, hasChildren } from './diffsAPI.js';
+import * as df from './diffsAPI.js';
 import states from './states.js';
 
 const tabSize = 4;
@@ -72,7 +72,7 @@ const makeChildStr = (state, propName, values, depth, drawSign) => {
 
 const formatStylish = (diffs, drawSign = 'yes') => {
   const result = diffs.reduce((acc, diff) => {
-    const diffHasChildren = hasChildren(diff);
+    const diffHasChildren = df.hasChildren(diff);
     const {
       propName, state, values, depth,
     } = diff;
@@ -81,7 +81,7 @@ const formatStylish = (diffs, drawSign = 'yes') => {
 
     if (diffHasChildren) {
       acc.push(makeParentStr(state, propName, depth, drawSign));
-      acc.push(formatStylish(getChildren(diff), nextDrawSign));
+      acc.push(formatStylish(df.getChildren(diff), nextDrawSign));
       acc.push(makeCloseString(depth));
       if (!_.isPlainObject(value2) && state === states.CHANGED) {
         acc.push(...makeChildStr(state, propName, values, depth, drawSign));
