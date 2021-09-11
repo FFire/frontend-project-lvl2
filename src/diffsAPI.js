@@ -31,7 +31,7 @@ export const getValue = (diff, path) => {
 
 export const hasPath = (diff, path) => {
   _.noop();
-  return !_.has(diff, path);
+  return _.has(diff, path);
 };
 
 export const getType = (diff) => {

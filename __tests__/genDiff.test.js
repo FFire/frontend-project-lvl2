@@ -10,8 +10,8 @@ const readFilePath = (absFilepath) => fs.readFileSync(absFilepath, 'utf8');
 const expected1 = readFilePath(path.resolve(fixturesPath, 'expect1.txt'));
 
 test('Without params', () => {
-  expect(() => genDiff()).toThrow("error: missing required argument 'filepath1'");
-  expect(() => genDiff('filepath1')).toThrow("error: missing required argument 'filepath2'");
+  expect(() => genDiff()).toThrow();
+  expect(() => genDiff('filepath1')).toThrow();
 });
 
 test('File do not exist', () => {

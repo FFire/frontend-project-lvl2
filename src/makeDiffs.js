@@ -8,6 +8,7 @@ const getState = (obj1, obj2, treePath) => {
   if (!df.hasPath(obj1, treePath)) { return states.CREATED; }
   if (!df.hasPath(obj2, treePath)) { return states.DELETED; }
   if (df.isObject(value1) && df.isObject(value2)) { return states.UNCHANGED; }
+  if (df.isObject(value1) && !df.isObject(value2)) { return states.CHANGED; }
   if (value1 !== value2) { return states.CHANGED; }
   return states.UNCHANGED;
 };

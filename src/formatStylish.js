@@ -11,7 +11,7 @@ const makeSigns = () => {
   signs[states.CREATED] = '+';
   signs[states.DELETED] = '-';
   signs[states.UNCHANGED] = ' ';
-  signs[states.CHANGED] = ' ';
+  signs[states.CHANGED] = '-';
   return signs;
 };
 
@@ -58,7 +58,7 @@ const makeChildStr = (state, propName, values, depth, drawSign) => {
     const signStr = makeSignStr(state);
     acc.push(formatString(signStr, propName, value2));
   }
-  if ((state === states.DELETED || state === states.CHANGED) && !_.isPlainObject(value1)) {
+  if ((state === states.DELETED || state === states.CHANGED) && !df.isObject(value1)) {
     const signStr = makeSignStr(states.DELETED);
     acc.push(formatString(signStr, propName, value1));
   }
@@ -83,7 +83,7 @@ const formatStylish = (diffs, drawSign = 'yes') => {
       acc.push(makeParentStr(state, propName, depth, drawSign));
       acc.push(formatStylish(df.getChildren(diff), nextDrawSign));
       acc.push(makeCloseString(depth));
-      if (!_.isPlainObject(value2) && state === states.CHANGED) {
+      if (!df.isObject(value2) && state === states.CHANGED) {
         acc.push(...makeChildStr(state, propName, values, depth, drawSign));
       }
     } else {

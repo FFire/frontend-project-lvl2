@@ -28,7 +28,7 @@ const formatDiffs = (diffs, options) => {
 const checkPathOptions = (options) => {
   Object.entries(options).forEach(([optName, optValue]) => {
     if (optValue === undefined) {
-      throw new Error(`error: missing required argument ${optName}`);
+      throw new Error(`Missing required argument ${optName}`);
     }
   });
 };
