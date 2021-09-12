@@ -28,11 +28,10 @@ const makeDiffs = (obj1, obj2) => {
       const state = getState(obj1, obj2, currPath);
       if (df.isObject(treeValue)) {
         acc.push(
-          df.makeDiff(treeKey, state, values, depth,
-            differences(treeValue, currPath)),
+          df.makeDiff(treeKey, differences(treeValue, currPath), currPath, state, values, depth),
         );
       } else {
-        acc.push(df.makeDiff(treeKey, state, values, depth));
+        acc.push(df.makeDiff(treeKey, [], currPath, state, values, depth));
       }
       return acc;
     }, []);
@@ -41,7 +40,7 @@ const makeDiffs = (obj1, obj2) => {
   };
   // #endregion
 
-  const result = df.makeDiff('root', states.UNCHANGED, df.emptyValues, 0, differences(fullTree));
+  const result = df.makeDiff('root', differences(fullTree));
   return [result];
 };
 

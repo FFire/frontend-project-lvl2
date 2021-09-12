@@ -2,27 +2,15 @@
 
 import _ from 'lodash';
 import parseFile from './parsers.js';
-import formatStylish from './formatStylish.js';
 import { getFileAbsPath, getExtName, readFile } from './readFileUtils.js';
 import makeDiffs from './makeDiffs.js';
-
-const defaultOptions = {
-  format: 'stylish',
-};
+import getFormatter from './formatters/index.js';
 
 const getObject = (filePath) => {
   const absFilePath = getFileAbsPath(filePath.toLowerCase());
   const extName = getExtName(filePath);
   const rawFile = readFile(absFilePath);
   return parseFile(rawFile, extName);
-};
-
-const formatDiffs = (diffs, options) => {
-  _.noop(options);
-  console.dir(diffs, { depth: null });
-  const result = formatStylish(diffs);
-
-  return result;
 };
 
 const checkPathOptions = (options) => {
@@ -33,22 +21,29 @@ const checkPathOptions = (options) => {
   });
 };
 
-const genDiff = (filepath1, filepath2, options) => {
+const getActualOptions = (formatOption) => {
+  _.noop();
+  return (formatOption !== 'plain') ? 'stylish' : formatOption;
+};
+
+const genDiff = (filepath1, filepath2, formatOption) => {
   checkPathOptions({ filepath1, filepath2 });
-  // todo replace with _.defaults
-  const actualOptions = { ...defaultOptions, ...options };
+  const actualOptions = getActualOptions(formatOption);
   const obj1 = getObject(filepath1);
   const obj2 = getObject(filepath2);
   const diffs = makeDiffs(obj1, obj2);
-  return formatDiffs(diffs, actualOptions);
+  // console.dir(diffs, { depth: null });
+  const formatter = getFormatter(actualOptions);
+  return formatter(diffs);
 };
 
 export const genDiffToConsole = (filepath1, filepath2, options) => {
-  const formatedDiffs = genDiff(filepath1, filepath2, options);
-  // console.log('--------------------------------');
+  const formatedDiffs = genDiff(filepath1, filepath2, options.format);
+  console.log('--------------------------------');
+  console.log('🚀 > options', options.format);
   console.log(formatedDiffs);
 };
 
-genDiff('__fixtures__/file1short.json', '__fixtures__/file2short.json');
+genDiff('__fixtures__/file1short.json', '__fixtures__/file2short.json', 'plain');
 
 export default genDiff;

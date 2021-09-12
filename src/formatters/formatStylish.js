@@ -1,8 +1,8 @@
 // @ts-check
 
 import _ from 'lodash';
-import * as df from './diffsAPI.js';
-import states from './states.js';
+import * as df from '../diffsAPI.js';
+import states from '../states.js';
 
 const tabSize = 4;
 
