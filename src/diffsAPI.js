@@ -1,9 +1,13 @@
 import _ from 'lodash';
+import states from './states.js';
 
-export const makeDiff = (propName, state, values, depth, children = []) => {
+export const emptyValues = [undefined, undefined];
+
+export const makeDiff = (propName, children = [], fullPath = '', state = states.UNCHANGED, values = emptyValues, depth = 0) => {
   _.noop();
   const diffObject = {
     propName,
+    fullPath,
     state,
     values,
     depth,
@@ -11,8 +15,6 @@ export const makeDiff = (propName, state, values, depth, children = []) => {
   };
   return diffObject;
 };
-
-export const emptyValues = [undefined, undefined];
 
 export const hasChildren = (diff) => {
   _.noop();
