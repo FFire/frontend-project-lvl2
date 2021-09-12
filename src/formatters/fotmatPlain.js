@@ -9,7 +9,6 @@ const makeTextPath = (fullPath) => {
   return path;
 };
 
-// todo refactor this
 const makeTextState = (state) => {
   const textState = {};
   textState[states.DELETED] = ' was removed';

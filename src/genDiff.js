@@ -1,6 +1,5 @@
 // @ts-check
 
-import _ from 'lodash';
 import parseFile from './parsers.js';
 import { getFileAbsPath, getExtName, readFile } from './readFileUtils.js';
 import makeDiffs from './makeDiffs.js';
@@ -21,29 +20,19 @@ const checkPathOptions = (options) => {
   });
 };
 
-const getActualOptions = (formatOption) => {
-  _.noop();
-  return (formatOption !== 'plain') ? 'stylish' : formatOption;
-};
-
-const genDiff = (filepath1, filepath2, formatOption) => {
+const genDiff = (filepath1, filepath2, option = 'stylish') => {
   checkPathOptions({ filepath1, filepath2 });
-  const actualOptions = getActualOptions(formatOption);
+
   const obj1 = getObject(filepath1);
   const obj2 = getObject(filepath2);
   const diffs = makeDiffs(obj1, obj2);
-  // console.dir(diffs, { depth: null });
-  const formatter = getFormatter(actualOptions);
+  const formatter = getFormatter(option);
   return formatter(diffs);
 };
 
 export const genDiffToConsole = (filepath1, filepath2, options) => {
   const formatedDiffs = genDiff(filepath1, filepath2, options.format);
-  console.log('--------------------------------');
-  console.log('🚀 > options', options.format);
   console.log(formatedDiffs);
 };
-
-genDiff('__fixtures__/file1short.json', '__fixtures__/file2short.json', 'plain');
 
 export default genDiff;
