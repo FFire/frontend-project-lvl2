@@ -3,24 +3,50 @@
 import _ from 'lodash';
 import * as df from '../diffsAPI.js';
 import states from '../states.js';
-/*
-Property 'common.follow' was added with value: false
-Property 'common.setting2' was removed
-Property 'common.setting3' was updated. From true to null
-Property 'common.setting4' was added with value: 'blah blah'
-Property 'common.setting5' was added with value: [complex value]
-Property 'common.setting6.doge.wow' was updated. From '' to 'so much'
-Property 'common.setting6.ops' was added with value: 'vops'
-Property 'group1.baz' was updated. From 'bas' to 'bars'
-Property 'group1.nest' was updated. From [complex value] to 'str'
-Property 'group2' was removed
-Property 'group3' was added with value: [complex value]
-*/
+
+const makeTextPath = (fullPath) => {
+  const path = `Property '${fullPath.join('.')}'`;
+  return path;
+};
+
+// todo refactor this
+const makeTextState = (state) => {
+  const textState = {};
+  textState[states.DELETED] = ' was removed';
+  textState[states.CREATED] = ' was added with value:';
+  textState[states.UNCHANGED] = '';
+  textState[states.CHANGED] = ' was updated.';
+  return textState[state];
+};
+
+const formatValue = (value) => {
+  if (_.isString(value)) return `'${value}'`;
+  if (_.isPlainObject(value)) return '[complex value]';
+
+  return value;
+};
+
+const makeTextValues = (values, state) => {
+  const [value1, value2] = values;
+
+  switch (state) {
+    case states.CHANGED:
+      return ` From ${formatValue(value1)} to ${formatValue(value2)}`;
+
+    case states.CREATED:
+      return ` ${formatValue(value2)}`;
+
+    default:
+      return '';
+  }
+};
 
 const makePlainStr = (fullPath, state, values) => {
-  const result = `${fullPath.join('.')} -- ${state} -- ${values}`;
+  const textPath = makeTextPath(fullPath);
+  const textState = makeTextState(state);
+  const textValues = makeTextValues(values, state);
 
-  return result;
+  return `${textPath}${textState}${textValues}`;
 };
 
 const formatPlain = (diffs) => {
@@ -35,13 +61,13 @@ const formatPlain = (diffs) => {
     }
 
     if (diffHasChildren && !isChangedDiff) {
-      acc.push(...formatPlain(df.getChildren(diff)));
+      acc.push(formatPlain(df.getChildren(diff)));
     }
 
-    return acc;
+    return _.flattenDeep(acc);
   }, []);
 
-  return result;
+  return result.join('\n');
 };
 
 export default formatPlain;
