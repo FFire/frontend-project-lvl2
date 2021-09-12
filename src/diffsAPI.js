@@ -15,15 +15,14 @@ export const makeDiff = (propName, children = [], fullPath = '', state = states.
   return diffObject;
 };
 
-export const hasChildren = (diff) => (diff.children.length > 0)
+export const hasChildren = (diff) => (diff.children.length > 0);
 
 export const getChildren = (diff) => diff.children;
 
 export const getValue = (diff, path) => _.get(diff, path);
 
-export const hasPath = (diff, path) => _.has(diff, path)
+export const hasPath = (diff, path) => _.has(diff, path);
 
 export const getType = (diff) => typeof (diff);
 
 export const isObject = (diff) => _.isPlainObject(diff);
-
