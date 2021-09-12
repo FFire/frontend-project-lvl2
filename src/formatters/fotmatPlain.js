@@ -26,20 +26,21 @@ const makePlainStr = (fullPath, state, values) => {
 const formatPlain = (diffs) => {
   const result = diffs.reduce((acc, diff) => {
     const { fullPath, state, values } = diff;
+    const isChangedDiff = (state !== states.UNCHANGED);
+    const diffHasChildren = df.hasChildren(diff);
 
-    if (state !== states.UNCHANGED) {
+    if (isChangedDiff) {
       const formattedStr = makePlainStr(fullPath, state, values);
       acc.push(formattedStr);
     }
 
-    if (df.hasChildren(diff)) {
+    if (diffHasChildren && !isChangedDiff) {
       acc.push(...formatPlain(df.getChildren(diff)));
     }
 
     return acc;
   }, []);
 
-  // console.log('🚀 > acc', result);
   return result;
 };
 
