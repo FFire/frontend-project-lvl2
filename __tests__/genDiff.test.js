@@ -7,7 +7,8 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const fixturesPath = path.resolve(__dirname, '../__fixtures__');
 const readFilePath = (absFilepath) => fs.readFileSync(absFilepath, 'utf8');
-const expected1 = readFilePath(path.resolve(fixturesPath, 'expect1.txt'));
+const expectedStylish = readFilePath(path.resolve(fixturesPath, 'expectStylish.txt'));
+const expectedPlain = readFilePath(path.resolve(fixturesPath, 'expectPlain.txt'));
 
 test('Without params', () => {
   expect(() => genDiff()).toThrow();
@@ -23,8 +24,8 @@ test('JSON Absolute and relative paths', () => {
   const filName2 = '__fixtures__/file2.json';
   const absFilePath1 = path.resolve(__dirname, '..', filName1);
   const absFilePath2 = path.resolve(__dirname, '..', filName2);
-  expect(genDiff(absFilePath1, absFilePath2)).toEqual(expected1);
-  expect(genDiff(filName1, filName2)).toEqual(expected1);
+  expect(genDiff(absFilePath1, absFilePath2)).toEqual(expectedStylish);
+  expect(genDiff(filName1, filName2)).toEqual(expectedStylish);
 });
 
 test('YAML Absolute and relative paths', () => {
@@ -32,6 +33,12 @@ test('YAML Absolute and relative paths', () => {
   const filName2 = '__fixtures__/file2.yaml';
   const absFilePath1 = path.resolve(__dirname, '..', filName1);
   const absFilePath2 = path.resolve(__dirname, '..', filName2);
-  expect(genDiff(absFilePath1, absFilePath2)).toEqual(expected1);
-  expect(genDiff(filName1, filName2)).toEqual(expected1);
+  expect(genDiff(absFilePath1, absFilePath2)).toEqual(expectedStylish);
+  expect(genDiff(filName1, filName2)).toEqual(expectedStylish);
+});
+
+test('Plain format', () => {
+  const filName1 = '__fixtures__/file1.json';
+  const filName2 = '__fixtures__/file2.json';
+  expect(genDiff(filName1, filName2, 'plain')).toEqual(expectedPlain);
 });
