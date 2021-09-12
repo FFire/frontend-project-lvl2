@@ -20,7 +20,6 @@ const signs = makeSigns();
 const makeCloseString = (depth) => {
   const closeBracket = '}';
   const leftMargin = depth * tabSize + 1;
-  // todo remove backtickle
   return `${_.padStart(closeBracket, leftMargin)}`;
 };
 
@@ -32,7 +31,6 @@ const makeParentStr = (state, propName, depth, drawSign) => {
   const leftMargin = depth * tabSize - 1;
   const signStr = (depth > 0) ? `${_.padStart(sign, leftMargin)} ` : '';
   const propNameStr = (depth > 0) ? `${propName}: ` : '';
-  // todo remove backtickle
   return `${signStr}${propNameStr}${openBracket}`;
 };
 
@@ -42,7 +40,6 @@ const makeChildStr = (state, propName, values, depth, drawSign) => {
       ? signs[states.UNCHANGED]
       : signs[currState];
     const leftMargin = depth * tabSize - 1;
-    // todo remove backtickle
     const signStr = `${_.padStart(sign, leftMargin)} `;
     return signStr;
   };

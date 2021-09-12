@@ -9,6 +9,7 @@ const fixturesPath = path.resolve(__dirname, '../__fixtures__');
 const readFilePath = (absFilepath) => fs.readFileSync(absFilepath, 'utf8');
 const expectedStylish = readFilePath(path.resolve(fixturesPath, 'expectStylish.txt'));
 const expectedPlain = readFilePath(path.resolve(fixturesPath, 'expectPlain.txt'));
+const expectJSON = readFilePath(path.resolve(fixturesPath, 'expectJSON.txt'));
 
 test('Without params', () => {
   expect(() => genDiff()).toThrow();
@@ -41,4 +42,10 @@ test('Plain format', () => {
   const filName1 = '__fixtures__/file1.json';
   const filName2 = '__fixtures__/file2.json';
   expect(genDiff(filName1, filName2, 'plain')).toEqual(expectedPlain);
+});
+
+test('JSON format', () => {
+  const filName1 = '__fixtures__/file1.json';
+  const filName2 = '__fixtures__/file2.json';
+  expect(genDiff(filName1, filName2, 'json')).toEqual(expectJSON);
 });

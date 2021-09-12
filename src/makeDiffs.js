@@ -16,7 +16,6 @@ const getState = (obj1, obj2, treePath) => {
 const makeDiffs = (obj1, obj2) => {
   const fullTree = _.defaultsDeep({}, obj1, obj2);
 
-  // #region Recurcive block
   const differences = (tree = {}, treePath = []) => {
     const entries = Object.entries(tree).sort();
     const result = entries.reduce((acc, [treeKey, treeValue]) => {
@@ -38,7 +37,6 @@ const makeDiffs = (obj1, obj2) => {
 
     return result;
   };
-  // #endregion
 
   const result = df.makeDiff('root', differences(fullTree));
   return [result];
