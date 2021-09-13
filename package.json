@@ -15,7 +15,8 @@
     "node": ">=14"
   },
   "scripts": {
-    "test": "npx jest --bail"
+    "test": "npx jest --bail",
+    "test-win": "node --experimental-vm-modules --no-warnings node_modules/jest/bin/jest --bail"
   },
   "repository": {
     "type": "git",
@@ -42,5 +43,8 @@
     "eslint-plugin-node": "^11.1.0",
     "jest": "^27.0.6",
     "jest-cli": "^27.0.6"
+  },
+  "wallaby": {
+    "autoDetect": true
   }
 }

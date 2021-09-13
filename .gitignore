@@ -1,8 +1,16 @@
-# Dependency directories
-.DS_Store
-node_modules
-*.sock
 .idea
 .vscode
-coverage
+
 *.log
+*.pdf
+*.psd
+
+node_modules/
+npm-debug.*
+
+Thumbs.db
+__MACOSX
+.DS_Store
+
+cc-test-reporter
+coverage

@@ -5,8 +5,9 @@ plugins:
 
 # https://eslint.org/docs/user-guide/configuring#specifying-environments
 env:
+  es2021: true
   node: true
-  es2020: true
+  jest: true
 
 extends:
   - 'airbnb-base'
