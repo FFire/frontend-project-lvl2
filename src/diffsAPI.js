@@ -5,7 +5,7 @@ import states from './states.js';
 
 export const emptyValues = [undefined, undefined];
 
-export const makeDiff = (propName, children = [], fullPath = '', state = states.UNCHANGED, values = emptyValues, depth = 0) => {
+export const makeDiff = (propName, children = [], fullPath = [], state = states.UNCHANGED, values = emptyValues, depth = 0) => {
   const diffObject = {
     propName,
     fullPath,
