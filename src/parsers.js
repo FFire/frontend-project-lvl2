@@ -1,3 +1,5 @@
+// @ts-check
+
 import yaml from 'js-yaml';
 
 const parseFile = (rawFile, extName) => {

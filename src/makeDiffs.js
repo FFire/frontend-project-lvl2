@@ -1,3 +1,5 @@
+// @ts-check
+
 import _ from 'lodash';
 import states from './states.js';
 import * as df from './diffsAPI.js';

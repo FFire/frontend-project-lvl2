@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+// @ts-check
 
 import { Command } from 'commander';
 import genDiff from '../index.js';

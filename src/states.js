@@ -1,3 +1,5 @@
+// @ts-check
+
 const states = {
   CREATED: 'created',
   DELETED: 'deleted',
