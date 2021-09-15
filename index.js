@@ -8,16 +8,16 @@ import getFormatter from './src/formatters/index.js';
 
 const getObject = (filePath) => {
   const absFilePath = path.resolve(filePath.toLowerCase());
-  const extName = path.extname(filePath);
+  const fileType = path.extname(filePath);
   const rawFile = fs.readFileSync(absFilePath, 'utf8');
-  return parseFile(rawFile, extName);
+  return parseFile(rawFile, fileType);
 };
 
-const genDiff = (filepath1, filepath2, option = 'stylish') => {
+const genDiff = (filepath1, filepath2, format = 'stylish') => {
   const obj1 = getObject(filepath1);
   const obj2 = getObject(filepath2);
   const diffs = makeDiffs(obj1, obj2);
-  const formatter = getFormatter(option);
+  const formatter = getFormatter(format);
 
   return formatter(diffs);
 };

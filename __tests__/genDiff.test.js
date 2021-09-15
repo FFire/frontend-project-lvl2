@@ -50,3 +50,7 @@ test('JSON format', () => {
   const filName2 = '__fixtures__/file2.json';
   expect(genDiff(filName1, filName2, 'json')).toEqual(expectJSON);
 });
+
+test('File format (extension) is undefined', () => {
+  expect(() => genDiff('__fixtures__/file1.json', '__fixtures__/file2.jso')).toThrow();
+});
