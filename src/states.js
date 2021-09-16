@@ -5,6 +5,7 @@ const states = {
   DELETED: 'deleted',
   CHANGED: 'changed',
   UNCHANGED: 'unchanged',
+  KEY: 'key',
 };
 
 export default states;
