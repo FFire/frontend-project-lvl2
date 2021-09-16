@@ -6,14 +6,10 @@ import formatStylish from './formatStylish.js';
 
 const getFormatter = (format) => {
   switch (format) {
-    case 'json':
-      return formatJSON;
+    case 'json': return formatJSON;
+    case 'plain': return formatPlain;
 
-    case 'plain':
-      return formatPlain;
-
-    default:
-      return formatStylish;
+    default: return formatStylish;
   }
 };
 
