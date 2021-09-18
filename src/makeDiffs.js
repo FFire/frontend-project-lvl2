@@ -5,21 +5,33 @@ import states from './states.js';
 
 const makeNode = (property, state, value1, value2) => {
   if (value2 === undefined) {
-    return { property, state, value: value1 };
+    return {
+      property,
+      state,
+      value: value1,
+    };
   }
   return {
-    property, state, oldValue: value1, newValue: value2,
+    property,
+    state,
+    oldValue: value1,
+    newValue: value2,
   };
 };
+
 const makeNodes = (key, obj1, obj2, iter) => {
-  if (!_.has(obj1, key)) return makeNode(key, states.CREATED, obj2[key]);
-  if (!_.has(obj2, key)) return makeNode(key, states.DELETED, obj1[key]);
-  if (_.isPlainObject(obj1[key])) {
-    if (_.isPlainObject(obj2[key])) {
-      return makeNode(key, states.KEY, iter(obj1[key], obj2[key]));
-    }
+  if (!_.has(obj1, key)) {
+    return makeNode(key, states.CREATED, obj2[key]);
   }
-  if (!_.isEqual(obj1[key], obj2[key])) return makeNode(key, states.CHANGED, obj1[key], obj2[key]);
+  if (!_.has(obj2, key)) {
+    return makeNode(key, states.DELETED, obj1[key]);
+  }
+  if (_.isPlainObject(obj1[key]) && _.isPlainObject(obj2[key])) {
+    return makeNode(key, states.KEY, iter(obj1[key], obj2[key]));
+  }
+  if (!_.isEqual(obj1[key], obj2[key])) {
+    return makeNode(key, states.CHANGED, obj1[key], obj2[key]);
+  }
   return makeNode(key, states.UNCHANGED, obj1[key]);
 };
 
