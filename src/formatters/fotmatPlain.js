@@ -1,73 +1,70 @@
-// // @ts-check
+// @ts-check
 
-// import _ from 'lodash';
-// import * as df from '../diffsAPI.js';
-// import states from '../states.js';
+import _ from 'lodash';
+import states from '../states.js';
+import { testDiffs } from '../testObjects.js';
 
-// const makeTextPath = (fullPath) => {
-//   const path = `Property '${fullPath.join('.')}'`;
-//   return path;
-// };
+const renderPath = (path) => `Property '${path.join('.')}'`;
 
-// const makeTextState = (state) => {
-//   const textState = {};
-//   textState[states.DELETED] = ' was removed';
-//   textState[states.CREATED] = ' was added with value:';
-//   textState[states.UNCHANGED] = '';
-//   textState[states.CHANGED] = ' was updated.';
-//   return textState[state];
-// };
+const renderState = (state) => {
+  switch (state) {
+    case states.DELETED: return ' was removed';
+    case states.CREATED: return ' was added with value:';
+    case states.UNCHANGED: return '';
+    case states.CHANGED: return ' was updated.';
+    case states.KEY: return '';
+    default: return '';
+  }
+};
 
-// const formatValue = (value) => {
-//   if (_.isString(value)) return `'${value}'`;
-//   if (_.isPlainObject(value)) return '[complex value]';
+const renderValue = (value) => {
+  if (_.isString(value)) return ` '${value}'`;
+  if (_.isPlainObject(value)) return ' [complex value]';
+  return ` ${value}`;
+};
 
-//   return value;
-// };
+// Property 'common.follow' was added with value: false
+// Property 'common.setting2' was removed
+// Property 'common.setting3' was updated. From true to null
+// Property 'common.setting4' was added with value: 'blah blah'
+// Property 'common.setting5' was added with value: [complex value]
+// Property 'common.setting6.doge.wow' was updated. From '' to 'so much'
+// Property 'common.setting6.ops' was added with value: 'vops'
+// Property 'group1.baz' was updated. From 'bas' to 'bars'
+// Property 'group1.nest' was updated. From [complex value] to 'str'
+// Property 'group2' was removed
+// Property 'group3' was added with value: [complex value]
 
-// const makeTextValues = (values, state) => {
-//   const [value1, value2] = values;
+const formatPlain = (diffs) => {
+  const renderProps = (diff, path = []) => diff.reduce((lines, item) => {
+    if (item.state === states.UNCHANGED) return lines;
+    const {
+      property, state, value, oldValue, newValue,
+    } = item;
+    const currPath = [...path, property];
+    const lineParts = [
+      renderPath(currPath), renderState(state),
+    ];
 
-//   switch (state) {
-//     case states.CHANGED:
-//       return ` From ${formatValue(value1)} to ${formatValue(value2)}`;
+    if (state === states.DELETED) {
+      lines.push(lineParts.join(''));
+    } else if (state === states.CREATED) {
+      lineParts.push(renderValue(value));
+      lines.push(lineParts.join(''));
+    } else if (state === states.CHANGED) {
+      lineParts.push(' From', renderValue(oldValue));
+      lineParts.push(' to', renderValue(newValue));
+      lines.push(lineParts.join(''));
+    } else if (state === states.KEY) {
+      lines.push(renderProps(value, currPath));
+    }
 
-//     case states.CREATED:
-//       return ` ${formatValue(value2)}`;
+    return _.flattenDeep(lines);
+  }, []);
 
-//     default:
-//       return '';
-//   }
-// };
+  return renderProps(diffs).join('\n');
+};
 
-// const makePlainStr = (fullPath, state, values) => {
-//   const textPath = makeTextPath(fullPath);
-//   const textState = makeTextState(state);
-//   const textValues = makeTextValues(values, state);
-
-//   return `${textPath}${textState}${textValues}`;
-// };
-
-// const formatPlain = (diffs) => {
-//   const result = diffs.reduce((acc, diff) => {
-//     const { fullPath, state, values } = diff;
-//     const isChangedDiff = (state !== states.UNCHANGED);
-//     const diffHasChildren = df.hasChildren(diff);
-
-//     if (isChangedDiff) {
-//       const formattedStr = makePlainStr(fullPath, state, values);
-//       acc.push(formattedStr);
-//     }
-
-//     if (diffHasChildren && !isChangedDiff) {
-//       acc.push(formatPlain(df.getChildren(diff)));
-//     }
-
-//     return _.flattenDeep(acc);
-//   }, []);
-
-//   return result.join('\n');
-// };
-
-const formatPlain = () => '';
 export default formatPlain;
+const out = formatPlain(testDiffs);
+console.log(out);
