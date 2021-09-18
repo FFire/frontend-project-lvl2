@@ -23,7 +23,7 @@ const renderValue = (value) => {
   return ` ${value}`;
 };
 
-const renderLines = (item, path, renderProps) => {
+const renderLines = (item, path, iter) => {
   const { property, state, value } = item;
   const currPath = [...path, property];
   switch (state) {
@@ -42,7 +42,7 @@ const renderLines = (item, path, renderProps) => {
     }
 
     case states.KEY:
-      return renderProps(value, currPath);
+      return iter(value, currPath);
 
     default:
       throw new Error(`State is undefined: '${state}'`);
