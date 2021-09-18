@@ -2,14 +2,12 @@
 
 import _ from 'lodash';
 import states from '../states.js';
-// import { testDiffs } from '../testObjects.js';
 
 const textState = (state) => {
   switch (state) {
     case states.CREATED: return '  + ';
     case states.DELETED: return '  - ';
     case states.UNCHANGED: return '    ';
-    case states.CHANGED: return '  - ';
     case states.KEY: return '    ';
 
     default: return '';
@@ -66,10 +64,8 @@ const formatStylish = (diffs) => {
     return acc;
   }, []);
 
-  const lines = renderProps(diffs);
+  const lines = renderProps(diffs).join('');
   return `{${lines}\n}`;
 };
 
 export default formatStylish;
-// const out = formatStylish(testDiffs);
-// console.log(out);
