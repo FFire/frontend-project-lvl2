@@ -1,95 +1,74 @@
 // @ts-check
 
 import _ from 'lodash';
-import * as df from '../diffsAPI.js';
 import states from '../states.js';
+// import { testDiffs } from '../testObjects.js';
 
-const tabSize = 4;
+const textState = (state) => {
+  switch (state) {
+    case states.CREATED: return '  + ';
+    case states.DELETED: return '  - ';
+    case states.UNCHANGED: return '    ';
+    case states.CHANGED: return '  - ';
+    case states.KEY: return '    ';
 
-const makeSigns = () => {
-  const signs = {};
-  signs[states.CREATED] = '+';
-  signs[states.DELETED] = '-';
-  signs[states.UNCHANGED] = ' ';
-  signs[states.CHANGED] = '-';
-  return signs;
+    default: return '';
+  }
 };
 
-const signs = makeSigns();
+const getTabs = (depth) => '    '.repeat(depth);
 
-const makeCloseString = (depth) => {
-  const closeBracket = '}';
-  const leftMargin = depth * tabSize + 1;
-  return `${_.padStart(closeBracket, leftMargin)}`;
-};
+const renderValue = (value, depth = 0) => {
+  if (!_.isObject(value)) return String(value);
 
-const makeParentStr = (state, propName, depth, drawSign) => {
-  const openBracket = '{';
-  const sign = (drawSign === 'no')
-    ? signs[states.UNCHANGED]
-    : signs[state];
-  const leftMargin = depth * tabSize - 1;
-  const signStr = (depth > 0) ? `${_.padStart(sign, leftMargin)} ` : '';
-  const propNameStr = (depth > 0) ? `${propName}: ` : '';
-  return `${signStr}${propNameStr}${openBracket}`;
-};
-
-const makeChildStr = (state, propName, values, depth, drawSign) => {
-  const makeSignStr = (currState) => {
-    const sign = (drawSign === 'no')
-      ? signs[states.UNCHANGED]
-      : signs[currState];
-    const leftMargin = depth * tabSize - 1;
-    const signStr = `${_.padStart(sign, leftMargin)} `;
-    return signStr;
-  };
-
-  const formatString = (sign, property, value) => {
+  const lines = _.keys(value).map((key) => {
     _.noop();
-    return `${sign}${property}: ${value}`;
-  };
+    return `${getTabs(depth + 1)}${key}: ${renderValue(value[key], depth + 1)}`;
+  });
 
-  const acc = [];
-  const [value1, value2] = values;
-  if (state === states.CREATED || state === states.UNCHANGED) {
-    const signStr = makeSignStr(state);
-    acc.push(formatString(signStr, propName, value2));
-  }
-  if ((state === states.DELETED || state === states.CHANGED) && !df.isObject(value1)) {
-    const signStr = makeSignStr(states.DELETED);
-    acc.push(formatString(signStr, propName, value1));
-  }
-  if (state === states.CHANGED) {
-    const signStr = makeSignStr(states.CREATED);
-    acc.push(formatString(signStr, propName, value2));
-  }
-
-  return acc;
+  return `{\n${lines.join('\n')}\n${getTabs(depth)}}`;
 };
 
-const formatStylish = (diffs, drawSign = 'yes') => {
-  const result = diffs.reduce((acc, diff) => {
-    const diffHasChildren = df.hasChildren(diff);
+const renderCommon = (depth, state, property, value) => [
+  '\n', getTabs(depth), textState(state), property,
+  ': ', renderValue(value, depth + 1),
+].join('');
+
+const renderChanged = (depth, property, oldValue, newValue) => [
+  '\n', getTabs(depth), textState(states.DELETED), property,
+  ': ', renderValue(oldValue, depth + 1),
+  '\n', getTabs(depth), textState(states.CREATED), property,
+  ': ', renderValue(newValue, depth + 1),
+].join('');
+
+const renderKey = (depth, property, values) => [
+  '\n', getTabs(depth), property,
+  ': {', ...values, '\n', getTabs(depth), '}',
+].join('');
+
+const formatStylish = (diffs) => {
+  const renderProps = (diff, depth = 0) => diff.map((item) => {
     const {
-      propName, state, values, depth,
-    } = diff;
-    const [, value2] = values;
-    const nextDrawSign = (state !== states.UNCHANGED || drawSign !== 'yes') ? 'no' : 'yes';
+      property, state, value, oldValue, newValue,
+    } = item;
 
-    if (diffHasChildren) {
-      acc.push(makeParentStr(state, propName, depth, drawSign));
-      acc.push(formatStylish(df.getChildren(diff), nextDrawSign));
-      acc.push(makeCloseString(depth));
-      if (!df.isObject(value2) && state === states.CHANGED) {
-        acc.push(...makeChildStr(state, propName, values, depth, drawSign));
-      }
-    } else {
-      acc.push(...makeChildStr(state, propName, values, depth, drawSign));
+    if (state === states.CREATED || state === states.DELETED || state === states.UNCHANGED) {
+      return renderCommon(depth, state, property, value);
     }
-    return _.flattenDeep(acc);
-  }, []);
+    if (state === states.CHANGED) {
+      return renderChanged(depth, property, oldValue, newValue);
+    }
+    if (state === states.KEY) {
+      return renderKey(depth + 1, property, renderProps(value, depth + 1));
+    }
 
-  return result.join('\n');
+    return '';
+  });
+
+  const lines = renderProps(diffs).join('');
+  return `{${lines}\n}`;
 };
 
 export default formatStylish;
+// const out = formatStylish(testDiffs);
+// console.log(out);

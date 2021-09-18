@@ -1,13 +1,5 @@
 // @ts-check
 
-import _ from 'lodash';
-
-const formatJSON = (diffs) => {
-  _.noop(diffs);
-  // const result = 'test JSON output';
-  const result = JSON.stringify(diffs);
-
-  return result;
-};
+const formatJSON = (diffs) => JSON.stringify(diffs);
 
 export default formatJSON;

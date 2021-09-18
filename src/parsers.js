@@ -1,11 +1,15 @@
+// @ts-check
+
 import yaml from 'js-yaml';
 
 const parseFile = (rawFile, extName) => {
-  if (['.yaml', '.yml'].includes((extName))) {
-    return yaml.load(rawFile);
-  }
+  switch (extName) {
+    case '.json': return JSON.parse(rawFile);
+    case '.yaml': return yaml.load(rawFile);
+    case '.yml': return yaml.load(rawFile);
 
-  return JSON.parse(rawFile);
+    default: throw new Error(`File type is undefined: '${extName}'`);
+  }
 };
 
 export default parseFile;

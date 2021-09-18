@@ -1,17 +1,25 @@
-import { Command } from 'commander';
-import genDiff, { genDiffToConsole } from './src/genDiff.js';
+// @ts-check
 
-const program = new Command();
+import * as path from 'path';
+import * as fs from 'fs';
+import parseFile from './src/parsers.js';
+import makeDiffs from './src/makeDiffs.js';
+import getFormatter from './src/formatters/index.js';
 
-program
-  .version('0.0.1')
-  .description('Compares two configuration files and shows a difference.')
-  .helpOption('-h, --help', 'output usage information')
-  .arguments('<filepath1> <filepath2>')
-  .option('-f, --format [type]', 'Output format ["plain", "stylish" , "json"]', 'stylish')
-  .action((filepath1, filepath2, options) => {
-    genDiffToConsole(filepath1, filepath2, options);
-  })
-  .parse(process.argv);
+const getObject = (filePath) => {
+  const absFilePath = path.resolve(filePath.toLowerCase());
+  const fileType = path.extname(filePath);
+  const rawFile = fs.readFileSync(absFilePath, 'utf8');
+  return parseFile(rawFile, fileType);
+};
+
+const genDiff = (filepath1, filepath2, format = 'stylish') => {
+  const obj1 = getObject(filepath1);
+  const obj2 = getObject(filepath2);
+  const diffs = makeDiffs(obj1, obj2);
+  const formatter = getFormatter(format);
+
+  return formatter(diffs);
+};
 
 export default genDiff;

@@ -2,7 +2,7 @@ import { test, expect } from '@jest/globals';
 import { fileURLToPath } from 'url';
 import * as path from 'path';
 import * as fs from 'fs';
-import genDiff from '../src/genDiff.js';
+import genDiff from '../index.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -18,7 +18,7 @@ test('Without params', () => {
 });
 
 test('File do not exist', () => {
-  expect(() => genDiff('filepath1', 'filepath2')).toThrow('File do not exist');
+  expect(() => genDiff('filepath1', 'filepath2')).toThrow();
 });
 
 test('JSON Absolute and relative paths', () => {
@@ -49,4 +49,8 @@ test('JSON format', () => {
   const filName1 = '__fixtures__/file1.json';
   const filName2 = '__fixtures__/file2.json';
   expect(genDiff(filName1, filName2, 'json')).toEqual(expectJSON);
+});
+
+test('File format (extension) is undefined', () => {
+  expect(() => genDiff('__fixtures__/file1.json', '__fixtures__/file2.jso')).toThrow();
 });

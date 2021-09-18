@@ -15,5 +15,8 @@ lint:
 test:
 	npm run test-win
 
+test2:
+	npx jest --colors --runInBand --bail
+
 test-coverage:
 	npm test -- --coverage --coverageProvider=v8
