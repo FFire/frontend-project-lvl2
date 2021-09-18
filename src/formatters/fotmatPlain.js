@@ -2,6 +2,7 @@
 
 import _ from 'lodash';
 import states from '../states.js';
+// import { testDiffs } from '../testObjects.js';
 
 const renderPath = (path) => `Property '${path.join('.')}'`;
 
@@ -23,33 +24,33 @@ const renderValue = (value) => {
 };
 
 const formatPlain = (diffs) => {
-  const renderProps = (diff, path = []) => diff.reduce((lines, item) => {
-    if (item.state === states.UNCHANGED) return lines;
-    const {
-      property, state, value, oldValue, newValue,
-    } = item;
-    const currPath = [...path, property];
-    const lineParts = [
-      renderPath(currPath), renderState(state),
-    ];
+  const renderProps = (diff, path = []) => diff
+    .filter((item) => item.state !== states.UNCHANGED)
+    .map((item) => {
+      const {
+        property, state, value, oldValue, newValue,
+      } = item;
+      const currPath = [...path, property];
 
-    if (state === states.DELETED) {
-      lines.push(lineParts.join(''));
-    } else if (state === states.CREATED) {
-      lineParts.push(renderValue(value));
-      lines.push(lineParts.join(''));
-    } else if (state === states.CHANGED) {
-      lineParts.push(' From', renderValue(oldValue));
-      lineParts.push(' to', renderValue(newValue));
-      lines.push(lineParts.join(''));
-    } else if (state === states.KEY) {
-      lines.push(renderProps(value, currPath));
-    }
+      if (state === states.DELETED) {
+        return `${renderPath(currPath)}${renderState(state)}`;
+      }
+      if (state === states.CREATED) {
+        return `${renderPath(currPath)}${renderState(state)}${renderValue(value)}`;
+      }
+      if (state === states.CHANGED) {
+        return `${renderPath(currPath)}${renderState(state)} From${renderValue(oldValue)} to${renderValue(newValue)}`;
+      }
+      if (state === states.KEY) {
+        return renderProps(value, currPath);
+      }
+      return '';
+    })
+    .join('\n');
 
-    return _.flattenDeep(lines);
-  }, []);
-
-  return renderProps(diffs).join('\n');
+  return renderProps(diffs);
 };
 
 export default formatPlain;
+// const out = formatPlain(testDiffs);
+// console.log(out);
