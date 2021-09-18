@@ -47,7 +47,7 @@ const renderKey = (depth, property, values) => [
   ': {', ...values, '\n', getTabs(depth), '}',
 ].join('');
 
-const renderLines = (item, depth, renderProps) => {
+const renderLines = (item, depth, iter) => {
   const { property, state, value } = item;
 
   switch (state) {
@@ -62,7 +62,7 @@ const renderLines = (item, depth, renderProps) => {
     }
 
     case states.KEY:
-      return renderKey(depth + 1, property, renderProps(value, depth + 1));
+      return renderKey(depth + 1, property, iter(value, depth + 1));
 
     default:
       throw new Error(`State is undefined: '${state}'`);
