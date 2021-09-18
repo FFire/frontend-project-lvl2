@@ -21,12 +21,13 @@ const getTabs = (depth) => '    '.repeat(depth);
 const renderValue = (value, depth = 0) => {
   if (!_.isObject(value)) return String(value);
 
-  const lines = _.keys(value).map((key) => {
-    _.noop();
-    return `${getTabs(depth + 1)}${key}: ${renderValue(value[key], depth + 1)}`;
-  });
+  const lines = _.keys(value).map((key) => [
+    getTabs(depth + 1), key, ': ', renderValue(value[key], depth + 1),
+  ].join(''));
 
-  return `{\n${lines.join('\n')}\n${getTabs(depth)}}`;
+  return [
+    '{\n', lines.join('\n'), '\n', getTabs(depth), '}',
+  ].join('');
 };
 
 const renderCommon = (depth, state, property, value) => [
@@ -46,28 +47,62 @@ const renderKey = (depth, property, values) => [
   ': {', ...values, '\n', getTabs(depth), '}',
 ].join('');
 
-const formatStylish = (diffs) => {
-  const renderProps = (diff, depth = 0) => diff.map((item) => {
-    const {
-      property, state, value, oldValue, newValue,
-    } = item;
+const renderLines = (item, depth, renderProps) => {
+  const { property, state, value } = item;
 
-    if (state === states.CREATED || state === states.DELETED || state === states.UNCHANGED) {
+  switch (state) {
+    case states.CREATED:
+    case states.DELETED:
+    case states.UNCHANGED:
       return renderCommon(depth, state, property, value);
-    }
-    if (state === states.CHANGED) {
+
+    case states.CHANGED: {
+      const { oldValue, newValue } = item;
       return renderChanged(depth, property, oldValue, newValue);
     }
-    if (state === states.KEY) {
+
+    case states.KEY:
       return renderKey(depth + 1, property, renderProps(value, depth + 1));
-    }
 
-    return '';
-  });
-
-  const lines = renderProps(diffs).join('');
-  return `{${lines}\n}`;
+    default:
+      throw new Error(`State is undefined: '${state}'`);
+  }
 };
+
+const formatStylish = (diffs) => {
+  const iter = (diff, depth = 0) => diff
+    .map((item) => renderLines(item, depth, iter))
+    .join('');
+
+  return ['{', iter(diffs), '\n}'].join('');
+};
+
+// const formatStylish = (diffs) => {
+//   const renderProps = (diff, depth = 0) => diff
+//     .map((item) => {
+//       const { property, state, value } = item;
+
+//       switch (state) {
+//         case states.CREATED:
+//         case states.DELETED:
+//         case states.UNCHANGED:
+//           return renderCommon(depth, state, property, value);
+
+//         case states.CHANGED: {
+//           const { oldValue, newValue } = item;
+//           return renderChanged(depth, property, oldValue, newValue);
+//         }
+
+//         case states.KEY:
+//           return renderKey(depth + 1, property, renderProps(value, depth + 1));
+
+//         default: throw new Error(`State is undefined: '${state}'`);
+//       }
+//     })
+//     .join('');
+
+//   return ['{', renderProps(diffs), '\n}'].join('');
+// };
 
 export default formatStylish;
 // const out = formatStylish(testDiffs);
