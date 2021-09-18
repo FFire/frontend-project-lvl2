@@ -2,7 +2,6 @@
 
 import _ from 'lodash';
 import states from '../states.js';
-import { testDiffs } from '../testObjects.js';
 
 const renderPath = (path) => `Property '${path.join('.')}'`;
 
@@ -22,18 +21,6 @@ const renderValue = (value) => {
   if (_.isPlainObject(value)) return ' [complex value]';
   return ` ${value}`;
 };
-
-// Property 'common.follow' was added with value: false
-// Property 'common.setting2' was removed
-// Property 'common.setting3' was updated. From true to null
-// Property 'common.setting4' was added with value: 'blah blah'
-// Property 'common.setting5' was added with value: [complex value]
-// Property 'common.setting6.doge.wow' was updated. From '' to 'so much'
-// Property 'common.setting6.ops' was added with value: 'vops'
-// Property 'group1.baz' was updated. From 'bas' to 'bars'
-// Property 'group1.nest' was updated. From [complex value] to 'str'
-// Property 'group2' was removed
-// Property 'group3' was added with value: [complex value]
 
 const formatPlain = (diffs) => {
   const renderProps = (diff, path = []) => diff.reduce((lines, item) => {
@@ -66,5 +53,3 @@ const formatPlain = (diffs) => {
 };
 
 export default formatPlain;
-const out = formatPlain(testDiffs);
-console.log(out);
