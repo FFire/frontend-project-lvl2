@@ -4,7 +4,7 @@ import _ from 'lodash';
 import states from './states.js';
 
 const makeDiffs = (obj1, obj2) => {
-  const keys = _.union(_.keys(obj1), _.keys(obj2)).sort();
+  const keys = _.union(_.keys(obj1), _.keys(obj2));
   const result = keys.flatMap((key) => {
     if (!_.has(obj1, key)) {
       return {
@@ -42,7 +42,7 @@ const makeDiffs = (obj1, obj2) => {
     };
   });
 
-  return result;
+  return _.sortBy(result, (item) => item.property);
 };
 
 export default makeDiffs;
