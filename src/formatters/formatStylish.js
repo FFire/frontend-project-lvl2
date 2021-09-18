@@ -21,13 +21,10 @@ const getTabs = (depth) => '    '.repeat(depth);
 const renderValue = (value, depth = 0) => {
   if (!_.isObject(value)) return String(value);
 
-  const lines = _.keys(value).reduce((acc, key) => {
-    acc.push([
-      getTabs(depth + 1), key, ': ', renderValue(value[key], depth + 1),
-    ].join(''));
-
-    return acc;
-  }, []);
+  const lines = _.keys(value).map((key) => {
+    _.noop();
+    return `${getTabs(depth + 1)}${key}: ${renderValue(value[key], depth + 1)}`;
+  });
 
   return `{\n${lines.join('\n')}\n${getTabs(depth)}}`;
 };
@@ -57,9 +54,11 @@ const formatStylish = (diffs) => {
 
     if (state === states.CREATED || state === states.DELETED || state === states.UNCHANGED) {
       return renderCommon(depth, state, property, value);
-    } if (state === states.CHANGED) {
+    }
+    if (state === states.CHANGED) {
       return renderChanged(depth, property, oldValue, newValue);
-    } if (state === states.KEY) {
+    }
+    if (state === states.KEY) {
       return renderKey(depth + 1, property, renderProps(value, depth + 1));
     }
 
