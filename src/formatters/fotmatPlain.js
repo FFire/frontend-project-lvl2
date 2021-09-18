@@ -23,34 +23,42 @@ const renderValue = (value) => {
   return ` ${value}`;
 };
 
-const formatPlain = (diffs) => {
-  const renderProps = (diff, path = []) => diff
-    .filter((item) => item.state !== states.UNCHANGED)
-    .map((item) => {
-      const {
-        property, state, value, oldValue, newValue,
-      } = item;
-      const currPath = [...path, property];
+const renderLines = (item, path, renderProps) => {
+  const { property, state, value } = item;
+  const currPath = [...path, property];
+  switch (state) {
+    case states.DELETED:
+      return [renderPath(currPath), renderState(state)].join('');
 
-      if (state === states.DELETED) {
-        return `${renderPath(currPath)}${renderState(state)}`;
-      }
-      if (state === states.CREATED) {
-        return `${renderPath(currPath)}${renderState(state)}${renderValue(value)}`;
-      }
-      if (state === states.CHANGED) {
-        return `${renderPath(currPath)}${renderState(state)} From${renderValue(oldValue)} to${renderValue(newValue)}`;
-      }
-      if (state === states.KEY) {
-        return renderProps(value, currPath);
-      }
-      return '';
-    })
+    case states.CREATED:
+      return [renderPath(currPath), renderState(state), renderValue(value)].join('');
+
+    case states.CHANGED: {
+      const { oldValue, newValue } = item;
+      return [
+        renderPath(currPath), renderState(state), ' From',
+        renderValue(oldValue), ' to', renderValue(newValue),
+      ].join('');
+    }
+
+    case states.KEY:
+      return renderProps(value, currPath);
+
+    default:
+      throw new Error(`State is undefined: '${state}'`);
+  }
+};
+
+const formatPlain = (diffs) => {
+  const iter = (diff, path = []) => diff
+    .filter((item) => item.state !== states.UNCHANGED)
+    .map((item) => renderLines(item, path, iter))
     .join('\n');
 
-  return renderProps(diffs);
+  return iter(diffs);
 };
 
 export default formatPlain;
+
 // const out = formatPlain(testDiffs);
 // console.log(out);
