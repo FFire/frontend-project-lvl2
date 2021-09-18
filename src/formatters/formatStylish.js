@@ -51,8 +51,8 @@ const renderLines = (item, depth, renderProps) => {
   const { property, state, value } = item;
 
   switch (state) {
-    case states.CREATED:
     case states.DELETED:
+    case states.CREATED:
     case states.UNCHANGED:
       return renderCommon(depth, state, property, value);
 
