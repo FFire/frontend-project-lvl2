@@ -77,33 +77,6 @@ const formatStylish = (diffs) => {
   return ['{', iter(diffs), '\n}'].join('');
 };
 
-// const formatStylish = (diffs) => {
-//   const renderProps = (diff, depth = 0) => diff
-//     .map((item) => {
-//       const { property, state, value } = item;
-
-//       switch (state) {
-//         case states.CREATED:
-//         case states.DELETED:
-//         case states.UNCHANGED:
-//           return renderCommon(depth, state, property, value);
-
-//         case states.CHANGED: {
-//           const { oldValue, newValue } = item;
-//           return renderChanged(depth, property, oldValue, newValue);
-//         }
-
-//         case states.KEY:
-//           return renderKey(depth + 1, property, renderProps(value, depth + 1));
-
-//         default: throw new Error(`State is undefined: '${state}'`);
-//       }
-//     })
-//     .join('');
-
-//   return ['{', renderProps(diffs), '\n}'].join('');
-// };
-
 export default formatStylish;
 // const out = formatStylish(testDiffs);
 // console.log(out);
