@@ -2,12 +2,14 @@
 
 import _ from 'lodash';
 import states from '../states.js';
+// import { testDiffs } from '../testObjects.js';
 
 const textState = (state) => {
   switch (state) {
     case states.CREATED: return '  + ';
     case states.DELETED: return '  - ';
     case states.UNCHANGED: return '    ';
+    case states.CHANGED: return '  - ';
     case states.KEY: return '    ';
 
     default: return '';
@@ -48,24 +50,26 @@ const renderKey = (depth, property, values) => [
 ].join('');
 
 const formatStylish = (diffs) => {
-  const renderProps = (diff, depth = 0) => diff.reduce((acc, item) => {
+  const renderProps = (diff, depth = 0) => diff.map((item) => {
     const {
       property, state, value, oldValue, newValue,
     } = item;
 
     if (state === states.CREATED || state === states.DELETED || state === states.UNCHANGED) {
-      acc.push(renderCommon(depth, state, property, value));
-    } else if (state === states.CHANGED) {
-      acc.push(renderChanged(depth, property, oldValue, newValue));
-    } else if (state === states.KEY) {
-      acc.push(renderKey(depth + 1, property, renderProps(value, depth + 1)));
+      return renderCommon(depth, state, property, value);
+    } if (state === states.CHANGED) {
+      return renderChanged(depth, property, oldValue, newValue);
+    } if (state === states.KEY) {
+      return renderKey(depth + 1, property, renderProps(value, depth + 1));
     }
 
-    return acc;
-  }, []);
+    return '';
+  });
 
   const lines = renderProps(diffs).join('');
   return `{${lines}\n}`;
 };
 
 export default formatStylish;
+// const out = formatStylish(testDiffs);
+// console.log(out);
