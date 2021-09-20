@@ -1,15 +1,15 @@
 // @ts-check
 
 import _ from 'lodash';
-import states from '../nodeTypes.js';
+import types from '../nodeTypes.js';
 // import { testDiffs } from '../testObjects.js';
 
-const renderState = (state) => {
-  switch (state) {
-    case states.DELETED: return '  - ';
-    case states.CREATED: return '  + ';
-    case states.UNCHANGED: return '    ';
-    default: throw new Error(`State is undefined: '${state}'`);
+const renderType = (type) => {
+  switch (type) {
+    case types.DELETED: return '  - ';
+    case types.CREATED: return '  + ';
+    case types.UNCHANGED: return '    ';
+    default: throw new Error(`Type is undefined: '${type}'`);
   }
 };
 
@@ -30,15 +30,15 @@ const renderValue = (value, depth = 0) => {
   ].join('');
 };
 
-const renderCommon = (depth, state, property, value) => [
-  '\n', renderTabs(depth), renderState(state), property,
+const renderCommon = (depth, type, property, value) => [
+  '\n', renderTabs(depth), renderType(type), property,
   ': ', renderValue(value, depth + 1),
 ].join('');
 
 const renderChanged = (depth, property, oldValue, newValue) => [
-  '\n', renderTabs(depth), renderState(states.DELETED), property,
+  '\n', renderTabs(depth), renderType(types.DELETED), property,
   ': ', renderValue(oldValue, depth + 1),
-  '\n', renderTabs(depth), renderState(states.CREATED), property,
+  '\n', renderTabs(depth), renderType(types.CREATED), property,
   ': ', renderValue(newValue, depth + 1),
 ].join('');
 
@@ -48,24 +48,24 @@ const renderKey = (depth, property, values) => [
 ].join('');
 
 const renderLines = (item, depth, iter) => {
-  const { property, state, value } = item;
+  const { property, type, value } = item;
 
-  switch (state) {
-    case states.DELETED:
-    case states.CREATED:
-    case states.UNCHANGED:
-      return renderCommon(depth, state, property, value);
+  switch (type) { // ?
+    case types.DELETED:
+    case types.CREATED:
+    case types.UNCHANGED:
+      return renderCommon(depth, type, property, value);
 
-    case states.CHANGED: {
+    case types.CHANGED: {
       const { oldValue, newValue } = item;
       return renderChanged(depth, property, oldValue, newValue);
     }
 
-    case states.KEY:
+    case types.KEY:
       return renderKey(depth + 1, property, iter(value, depth + 1));
 
     default:
-      throw new Error(`State is undefined: '${state}'`);
+      throw new Error(`Type is undefined: '${type}'`);
   }
 };
 

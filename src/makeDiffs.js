@@ -1,7 +1,7 @@
 // @ts-check
 
 import _ from 'lodash';
-import nodeTypes from './nodeTypes.js';
+import types from './nodeTypes.js';
 
 const makeDiffs = (object1, object2) => {
   const iter = (obj1, obj2) => {
@@ -10,14 +10,14 @@ const makeDiffs = (object1, object2) => {
       if (!_.has(obj1, key)) {
         return {
           property: key,
-          state: nodeTypes.CREATED,
+          type: types.CREATED,
           value: obj2[key],
         };
       }
       if (!_.has(obj2, key)) {
         return {
           property: key,
-          state: nodeTypes.DELETED,
+          type: types.DELETED,
           value: obj1[key],
         };
       }
@@ -25,21 +25,21 @@ const makeDiffs = (object1, object2) => {
         && _.isPlainObject(obj2[key])) {
         return {
           property: key,
-          state: nodeTypes.KEY,
+          type: types.KEY,
           value: iter(obj1[key], obj2[key]),
         };
       }
       if (!_.isEqual(obj1[key], obj2[key])) {
         return {
           property: key,
-          state: nodeTypes.CHANGED,
+          type: types.CHANGED,
           oldValue: obj1[key],
           newValue: obj2[key],
         };
       }
       return {
         property: key,
-        state: nodeTypes.UNCHANGED,
+        type: types.UNCHANGED,
         value: obj1[key],
       };
     });
