@@ -1,6 +1,6 @@
 // @ts-check
 
-const states = {
+const nodeTypes = {
   CREATED: 'created',
   DELETED: 'deleted',
   CHANGED: 'changed',
@@ -8,4 +8,4 @@ const states = {
   KEY: 'key',
 };
 
-export default states;
+export default nodeTypes;
