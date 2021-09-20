@@ -8,9 +8,15 @@ const getFormatter = (format) => {
   switch (format) {
     case 'json': return formatJSON;
     case 'plain': return formatPlain;
-
-    default: return formatStylish;
+    case 'stylish': return formatStylish;
+    default:
+      throw new Error(`Output format is undefined: '${format}'`);
   }
 };
 
-export default getFormatter;
+const formatDiffs = (diffs, format) => {
+  const formatter = getFormatter(format);
+  return formatter(diffs);
+};
+
+export default formatDiffs;
