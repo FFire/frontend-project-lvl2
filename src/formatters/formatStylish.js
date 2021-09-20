@@ -29,33 +29,31 @@ const renderValue = (value, depth = 0) => {
   return `{\n${lines.join('\n')}\n${renderTabs(depth)}}`;
 };
 
-const renderLines = (item, depth, iter) => {
-  const { property, type, value } = item;
-
-  switch (type) {
-    case types.DELETED:
-    case types.CREATED:
-    case types.UNCHANGED:
-      return `\n${renderTabs(depth)}${renderType(type)}${property}: ${renderValue(value, depth + 1)}`;
-
-    case types.CHANGED: {
-      const { oldValue, newValue } = item;
-      const strBefore = `\n${renderTabs(depth)}${renderType(types.DELETED)}${property}: ${renderValue(oldValue, depth + 1)}`;
-      const strAfter = `\n${renderTabs(depth)}${renderType(types.CREATED)}${property}: ${renderValue(newValue, depth + 1)}`;
-      return `${strBefore}${strAfter}`;
-    }
-
-    case types.KEY:
-      return `\n${renderTabs(depth + 1)}${property}: {${iter(value, depth + 1)}\n${renderTabs(depth + 1)}}`;
-
-    default:
-      throw new Error(`Type is undefined: '${type}'`);
-  }
-};
-
 const formatStylish = (diffs) => {
   const iter = (diff, depth = 0) => diff
-    .map((item) => renderLines(item, depth, iter))
+    .map((item) => {
+      const { property, type, value } = item;
+
+      switch (type) {
+        case types.DELETED:
+        case types.CREATED:
+        case types.UNCHANGED:
+          return `\n${renderTabs(depth)}${renderType(type)}${property}: ${renderValue(value, depth + 1)}`;
+
+        case types.CHANGED: {
+          const { oldValue, newValue } = item;
+          const strBefore = `\n${renderTabs(depth)}${renderType(types.DELETED)}${property}: ${renderValue(oldValue, depth + 1)}`;
+          const strAfter = `\n${renderTabs(depth)}${renderType(types.CREATED)}${property}: ${renderValue(newValue, depth + 1)}`;
+          return `${strBefore}${strAfter}`;
+        }
+
+        case types.KEY:
+          return `\n${renderTabs(depth + 1)}${property}: {${iter(value, depth + 1)}\n${renderTabs(depth + 1)}}`;
+
+        default:
+          throw new Error(`Type is undefined: '${type}'`);
+      }
+    })
     .join('');
 
   return `{${iter(diffs)}\n}`;
