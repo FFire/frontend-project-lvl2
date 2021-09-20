@@ -1,7 +1,7 @@
 // @ts-check
 
 import _ from 'lodash';
-import states from '../states.js';
+import states from '../nodeTypes.js';
 // import { testDiffs } from '../testObjects.js';
 
 const renderState = (state) => {
