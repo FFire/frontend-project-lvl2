@@ -4,47 +4,47 @@ import _ from 'lodash';
 import states from '../states.js';
 // import { testDiffs } from '../testObjects.js';
 
-const textState = (state) => {
+const renderState = (state) => {
   switch (state) {
-    case states.CREATED: return '  + ';
     case states.DELETED: return '  - ';
+    case states.CREATED: return '  + ';
     case states.UNCHANGED: return '    ';
-    case states.CHANGED: return '  - ';
-    case states.KEY: return '    ';
-
-    default: return '';
+    default: throw new Error(`State is undefined: '${state}'`);
   }
 };
 
-const getTabs = (depth) => '    '.repeat(depth);
+const renderTabs = (depth) => {
+  const tabSize = 4;
+  return ' '.repeat(tabSize).repeat(depth);
+};
 
 const renderValue = (value, depth = 0) => {
   if (!_.isObject(value)) return String(value);
 
   const lines = _.keys(value).map((key) => [
-    getTabs(depth + 1), key, ': ', renderValue(value[key], depth + 1),
+    renderTabs(depth + 1), key, ': ', renderValue(value[key], depth + 1),
   ].join(''));
 
   return [
-    '{\n', lines.join('\n'), '\n', getTabs(depth), '}',
+    '{\n', lines.join('\n'), '\n', renderTabs(depth), '}',
   ].join('');
 };
 
 const renderCommon = (depth, state, property, value) => [
-  '\n', getTabs(depth), textState(state), property,
+  '\n', renderTabs(depth), renderState(state), property,
   ': ', renderValue(value, depth + 1),
 ].join('');
 
 const renderChanged = (depth, property, oldValue, newValue) => [
-  '\n', getTabs(depth), textState(states.DELETED), property,
+  '\n', renderTabs(depth), renderState(states.DELETED), property,
   ': ', renderValue(oldValue, depth + 1),
-  '\n', getTabs(depth), textState(states.CREATED), property,
+  '\n', renderTabs(depth), renderState(states.CREATED), property,
   ': ', renderValue(newValue, depth + 1),
 ].join('');
 
 const renderKey = (depth, property, values) => [
-  '\n', getTabs(depth), property,
-  ': {', ...values, '\n', getTabs(depth), '}',
+  '\n', renderTabs(depth), property,
+  ': {', ...values, '\n', renderTabs(depth), '}',
 ].join('');
 
 const renderLines = (item, depth, iter) => {

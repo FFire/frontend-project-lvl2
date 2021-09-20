@@ -10,10 +10,8 @@ const renderState = (state) => {
   switch (state) {
     case states.DELETED: return ' was removed';
     case states.CREATED: return ' was added with value:';
-    case states.UNCHANGED: return '';
     case states.CHANGED: return ' was updated.';
-    case states.KEY: return '';
-    default: return '';
+    default: throw new Error(`State is undefined: '${state}'`);
   }
 };
 
@@ -26,6 +24,7 @@ const renderValue = (value) => {
 const renderLines = (item, path, iter) => {
   const { property, state, value } = item;
   const currPath = [...path, property];
+
   switch (state) {
     case states.DELETED:
       return [renderPath(currPath), renderState(state)].join('');
