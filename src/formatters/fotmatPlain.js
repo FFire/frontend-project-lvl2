@@ -27,17 +27,17 @@ const renderLines = (item, path, iter) => {
 
   switch (type) {
     case types.DELETED:
-      return [renderPath(currPath), renderType(type)].join('');
+      return `${renderPath(currPath)}${renderType(type)}`;
 
     case types.CREATED:
-      return [renderPath(currPath), renderType(type), renderValue(value)].join('');
+      return `${renderPath(currPath)}${renderType(type)}${renderValue(value)}`;
 
     case types.CHANGED: {
       const { oldValue, newValue } = item;
-      return [
-        renderPath(currPath), renderType(type), ' From',
-        renderValue(oldValue), ' to', renderValue(newValue),
-      ].join('');
+
+      const strBefore = `${renderPath(currPath)}${renderType(type)} From`;
+      const strAfter = `${renderValue(oldValue)} to${renderValue(newValue)}`;
+      return `${strBefore}${strAfter}`;
     }
 
     case types.KEY:
