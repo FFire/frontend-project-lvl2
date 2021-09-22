@@ -2,8 +2,8 @@
 
 import yaml from 'js-yaml';
 
-const parseFile = (rawFile, extName) => {
-  switch (extName) {
+const parseData = (rawFile, dataType) => {
+  switch (dataType) {
     case '.json':
       return JSON.parse(rawFile);
 
@@ -11,8 +11,8 @@ const parseFile = (rawFile, extName) => {
     case '.yml':
       return yaml.load(rawFile);
 
-    default: throw new Error(`File type is undefined: '${extName}'`);
+    default: throw new Error(`File type is undefined: '${dataType}'`);
   }
 };
 
-export default parseFile;
+export default parseData;
