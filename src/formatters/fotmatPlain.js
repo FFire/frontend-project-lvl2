@@ -43,9 +43,10 @@ const formatPlain = (diffs) => {
           return `${strPartOne}${strPartTwo}`;
         }
 
-        case types.NESTED:
-          return iter(value, currPath);
-
+        case types.NESTED: {
+          const { children } = item;
+          return iter(children, currPath);
+        }
         default:
           throw new Error(`Type is undefined: '${type}'`);
       }

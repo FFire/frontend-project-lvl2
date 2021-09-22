@@ -26,7 +26,7 @@ const makeDiffs = (object1, object2) => {
         return {
           property: key,
           type: types.NESTED,
-          value: iter(obj1[key], obj2[key]),
+          children: iter(obj1[key], obj2[key]),
         };
       }
       if (!_.isEqual(obj1[key], obj2[key])) {

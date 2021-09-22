@@ -47,9 +47,10 @@ const formatStylish = (diffs) => {
           return `${strBefore}${strAfter}`;
         }
 
-        case types.NESTED:
-          return `\n${renderTabs(depth + 1)}${property}: {${iter(value, depth + 1)}\n${renderTabs(depth + 1)}}`;
-
+        case types.NESTED: {
+          const { children } = item;
+          return `\n${renderTabs(depth + 1)}${property}: {${iter(children, depth + 1)}\n${renderTabs(depth + 1)}}`;
+        }
         default:
           throw new Error(`Type is undefined: '${type}'`);
       }
