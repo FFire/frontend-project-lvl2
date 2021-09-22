@@ -43,7 +43,7 @@ const formatPlain = (diffs) => {
           return `${strPartOne}${strPartTwo}`;
         }
 
-        case types.KEY:
+        case types.NESTED:
           return iter(value, currPath);
 
         default:

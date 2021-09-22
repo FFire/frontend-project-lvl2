@@ -25,7 +25,7 @@ const makeDiffs = (object1, object2) => {
         && _.isPlainObject(obj2[key])) {
         return {
           property: key,
-          type: types.KEY,
+          type: types.NESTED,
           value: iter(obj1[key], obj2[key]),
         };
       }

@@ -5,7 +5,7 @@ const nodeTypes = {
   DELETED: 'deleted',
   CHANGED: 'changed',
   UNCHANGED: 'unchanged',
-  KEY: 'key',
+  NESTED: 'nested',
 };
 
 export default nodeTypes;

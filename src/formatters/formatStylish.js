@@ -47,7 +47,7 @@ const formatStylish = (diffs) => {
           return `${strBefore}${strAfter}`;
         }
 
-        case types.KEY:
+        case types.NESTED:
           return `\n${renderTabs(depth + 1)}${property}: {${iter(value, depth + 1)}\n${renderTabs(depth + 1)}}`;
 
         default:
