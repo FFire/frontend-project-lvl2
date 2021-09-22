@@ -2,7 +2,7 @@
 
 import _ from 'lodash';
 import types from '../nodeTypes.js';
-// import { testDiffs } from '../testObjects.js';
+// import { testDiffs } from '../../__fixtures__/testObjects.js';
 
 const renderPath = (path) => `Property '${path.join('.')}'`;
 
@@ -38,14 +38,15 @@ const formatPlain = (diffs) => {
         case types.CHANGED: {
           const { oldValue, newValue } = item;
 
-          const strPartOne = `${renderPath(currPath)}${renderType(type)} From`;
-          const strPartTwo = `${renderValue(oldValue)} to${renderValue(newValue)}`;
-          return `${strPartOne}${strPartTwo}`;
+          const partOne = `${renderPath(currPath)}${renderType(type)} From`;
+          const partTwo = `${renderValue(oldValue)} to${renderValue(newValue)}`;
+          return `${partOne}${partTwo}`;
         }
 
-        case types.KEY:
-          return iter(value, currPath);
-
+        case types.NESTED: {
+          const { children } = item;
+          return iter(children, currPath);
+        }
         default:
           throw new Error(`Type is undefined: '${type}'`);
       }

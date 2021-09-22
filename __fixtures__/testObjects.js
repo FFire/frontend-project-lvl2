@@ -60,59 +60,59 @@ export const testObj2 = {
 export const testDiffs = [
   {
     property: 'common',
-    state: 'key',
-    value: [
-      { property: 'follow', state: 'created', value: false },
-      { property: 'setting1', state: 'unchanged', value: 'Value 1' },
-      { property: 'setting2', state: 'deleted', value: 200 },
+    type: 'nested',
+    children: [
+      { property: 'follow', type: 'created', value: false },
+      { property: 'setting1', type: 'unchanged', value: 'Value 1' },
+      { property: 'setting2', type: 'deleted', value: 200 },
       {
         property: 'setting3',
-        state: 'changed',
+        type: 'changed',
         oldValue: true,
         newValue: null,
       },
-      { property: 'setting4', state: 'created', value: 'blah blah' },
+      { property: 'setting4', type: 'created', value: 'blah blah' },
       {
         property: 'setting5',
-        state: 'created',
+        type: 'created',
         value: { key5: 'value5' },
       },
       {
         property: 'setting6',
-        state: 'key',
-        value: [
+        type: 'nested',
+        children: [
           {
             property: 'doge',
-            state: 'key',
-            value: [
+            type: 'nested',
+            children: [
               {
                 property: 'wow',
-                state: 'changed',
+                type: 'changed',
                 oldValue: '',
                 newValue: 'so much',
               },
             ],
           },
-          { property: 'key', state: 'unchanged', value: 'value' },
-          { property: 'ops', state: 'created', value: 'vops' },
+          { property: 'key', type: 'unchanged', value: 'value' },
+          { property: 'ops', type: 'created', value: 'vops' },
         ],
       },
     ],
   },
   {
     property: 'group1',
-    state: 'key',
-    value: [
+    type: 'nested',
+    children: [
       {
         property: 'baz',
-        state: 'changed',
+        type: 'changed',
         oldValue: 'bas',
         newValue: 'bars',
       },
-      { property: 'foo', state: 'unchanged', value: 'bar' },
+      { property: 'foo', type: 'unchanged', value: 'bar' },
       {
         property: 'nest',
-        state: 'changed',
+        type: 'changed',
         oldValue: { key: 'value' },
         newValue: 'str',
       },
@@ -120,12 +120,12 @@ export const testDiffs = [
   },
   {
     property: 'group2',
-    state: 'deleted',
+    type: 'deleted',
     value: { abc: 12345, deep: { id: 45 } },
   },
   {
     property: 'group3',
-    state: 'created',
+    type: 'created',
     value: { deep: { id: { number: 45 } }, fee: 100500 },
   },
 ];

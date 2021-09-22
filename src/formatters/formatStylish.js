@@ -2,7 +2,7 @@
 
 import _ from 'lodash';
 import types from '../nodeTypes.js';
-// import { testDiffs } from '../testObjects.js';
+// import { testDiffs } from '../../__fixtures__/testObjects.js';
 
 const renderType = (type) => {
   switch (type) {
@@ -38,25 +38,26 @@ const formatStylish = (diffs) => {
         case types.DELETED:
         case types.CREATED:
         case types.UNCHANGED:
-          return `\n${renderTabs(depth)}${renderType(type)}${property}: ${renderValue(value, depth + 1)}`;
+          return `${renderTabs(depth)}${renderType(type)}${property}: ${renderValue(value, depth + 1)}`;
 
         case types.CHANGED: {
           const { oldValue, newValue } = item;
-          const strBefore = `\n${renderTabs(depth)}${renderType(types.DELETED)}${property}: ${renderValue(oldValue, depth + 1)}`;
-          const strAfter = `\n${renderTabs(depth)}${renderType(types.CREATED)}${property}: ${renderValue(newValue, depth + 1)}`;
-          return `${strBefore}${strAfter}`;
+          const partOne = `${renderTabs(depth)}${renderType(types.DELETED)}${property}: ${renderValue(oldValue, depth + 1)}`;
+          const partTwo = `\n${renderTabs(depth)}${renderType(types.CREATED)}${property}: ${renderValue(newValue, depth + 1)}`;
+          return `${partOne}${partTwo}`;
         }
 
-        case types.KEY:
-          return `\n${renderTabs(depth + 1)}${property}: {${iter(value, depth + 1)}\n${renderTabs(depth + 1)}}`;
-
+        case types.NESTED: {
+          const { children } = item;
+          return `${renderTabs(depth + 1)}${property}: {\n${iter(children, depth + 1)}\n${renderTabs(depth + 1)}}`;
+        }
         default:
           throw new Error(`Type is undefined: '${type}'`);
       }
     })
-    .join('');
+    .join('\n');
 
-  return `{${iter(diffs)}\n}`;
+  return `{\n${iter(diffs)}\n}`;
 };
 
 export default formatStylish;

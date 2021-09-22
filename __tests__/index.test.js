@@ -12,45 +12,39 @@ const expectedStylish = readFilePath(path.resolve(fixturesPath, 'expectStylish.t
 const expectedPlain = readFilePath(path.resolve(fixturesPath, 'expectPlain.txt'));
 const expectJSON = readFilePath(path.resolve(fixturesPath, 'expectJSON.txt'));
 
-test('Without params', () => {
-  expect(() => genDiff()).toThrow();
-  expect(() => genDiff('filepath1')).toThrow();
+test.each([
+  {},
+  { fileName1: 'filepath1' },
+  { fileName1: 'filepath1', fileName2: 'filepath2' },
+  { fileName1: '__fixtures__/file1.json', fileName2: '__fixtures__/file2.jso' },
+])('Broken params File-1: [$fileName1] File-2: [$filepath2]', ({ fileName1, fileName2 }) => {
+  expect(() => genDiff(fileName1, fileName2)).toThrow();
 });
 
-test('File do not exist', () => {
-  expect(() => genDiff('filepath1', 'filepath2')).toThrow();
-});
-
-test('JSON Absolute and relative paths', () => {
-  const filName1 = '__fixtures__/file1.json';
-  const filName2 = '__fixtures__/file2.json';
-  const absFilePath1 = path.resolve(__dirname, '..', filName1);
-  const absFilePath2 = path.resolve(__dirname, '..', filName2);
+test.each([
+  { format: 'plain', expected: expectedPlain },
+  { format: 'json', expected: expectJSON },
+  { format: 'stylish', expected: expectedStylish },
+  { expected: expectedStylish },
+])('JSON with [$format] Format', ({ format, expected }) => {
+  const fileName1 = '__fixtures__/file1.json';
+  const fileName2 = '__fixtures__/file2.json';
+  expect(genDiff(fileName1, fileName2, format)).toEqual(expected);
+  const absFilePath1 = path.resolve(__dirname, '..', fileName1);
+  const absFilePath2 = path.resolve(__dirname, '..', fileName2);
   expect(genDiff(absFilePath1, absFilePath2)).toEqual(expectedStylish);
-  expect(genDiff(filName1, filName2)).toEqual(expectedStylish);
 });
 
-test('YAML Absolute and relative paths', () => {
-  const filName1 = '__fixtures__/file1.yaml';
-  const filName2 = '__fixtures__/file2.yaml';
-  const absFilePath1 = path.resolve(__dirname, '..', filName1);
-  const absFilePath2 = path.resolve(__dirname, '..', filName2);
+test.each([
+  { format: 'plain', expected: expectedPlain },
+  { format: 'json', expected: expectJSON },
+  { format: 'stylish', expected: expectedStylish },
+  { expected: expectedStylish },
+])('YAML with [$format] Format', ({ format, expected }) => {
+  const fileName1 = '__fixtures__/file1.yaml';
+  const fileName2 = '__fixtures__/file2.yaml';
+  expect(genDiff(fileName1, fileName2, format)).toEqual(expected);
+  const absFilePath1 = path.resolve(__dirname, '..', fileName1);
+  const absFilePath2 = path.resolve(__dirname, '..', fileName2);
   expect(genDiff(absFilePath1, absFilePath2)).toEqual(expectedStylish);
-  expect(genDiff(filName1, filName2)).toEqual(expectedStylish);
-});
-
-test('Plain format', () => {
-  const filName1 = '__fixtures__/file1.json';
-  const filName2 = '__fixtures__/file2.json';
-  expect(genDiff(filName1, filName2, 'plain')).toEqual(expectedPlain);
-});
-
-test('JSON format', () => {
-  const filName1 = '__fixtures__/file1.json';
-  const filName2 = '__fixtures__/file2.json';
-  expect(genDiff(filName1, filName2, 'json')).toEqual(expectJSON);
-});
-
-test('File format (extension) is undefined', () => {
-  expect(() => genDiff('__fixtures__/file1.json', '__fixtures__/file2.jso')).toThrow();
 });

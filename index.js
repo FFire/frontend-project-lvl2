@@ -2,15 +2,15 @@
 
 import * as path from 'path';
 import * as fs from 'fs';
-import parseFile from './src/parsers.js';
+import parseData from './src/parsers.js';
 import makeDiffs from './src/makeDiffs.js';
 import formatDiffs from './src/formatters/index.js';
 
 const getObject = (filePath) => {
   const absFilePath = path.resolve(filePath);
-  const fileType = path.extname(filePath);
-  const rawFile = fs.readFileSync(absFilePath, 'utf8');
-  return parseFile(rawFile, fileType);
+  const dataType = path.extname(filePath);
+  const rawData = fs.readFileSync(absFilePath, 'utf8');
+  return parseData(rawData, dataType);
 };
 
 const genDiff = (filepath1, filepath2, format = 'stylish') => {

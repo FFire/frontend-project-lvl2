@@ -1,7 +1,7 @@
 // @ts-check
 
 import formatJSON from './formatJSON.js';
-import formatPlain from './fotmatPlain.js';
+import formatPlain from './formatPlain.js';
 import formatStylish from './formatStylish.js';
 
 const getFormatter = (format) => {
