@@ -2,7 +2,7 @@
 
 import _ from 'lodash';
 import types from '../nodeTypes.js';
-// import { testDiffs } from '../testObjects.js';
+// import { testDiffs } from '../../__fixtures__/testObjects.js';
 
 const renderPath = (path) => `Property '${path.join('.')}'`;
 

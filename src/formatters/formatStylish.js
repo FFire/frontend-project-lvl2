@@ -2,7 +2,7 @@
 
 import _ from 'lodash';
 import types from '../nodeTypes.js';
-import { testDiffs } from '../../__fixtures__/testObjects.js';
+// import { testDiffs } from '../../__fixtures__/testObjects.js';
 
 const renderType = (type) => {
   switch (type) {
@@ -61,5 +61,5 @@ const formatStylish = (diffs) => {
 };
 
 export default formatStylish;
-const out = formatStylish(testDiffs);
-console.log(out);
+// const out = formatStylish(testDiffs);
+// console.log(out);
