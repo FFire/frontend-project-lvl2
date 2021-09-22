@@ -4,7 +4,7 @@ import _ from 'lodash';
 import types from './nodeTypes.js';
 
 const makeDiffs = (obj1, obj2) => {
-  const keys = _.union(_.keys(obj1), _.keys(obj2));
+  const keys = _.chain([]).union(_.keys(obj1), _.keys(obj2)).sortBy().value();
   const nodes = keys.map((key) => {
     if (!_.has(obj1, key)) {
       return {
@@ -43,7 +43,7 @@ const makeDiffs = (obj1, obj2) => {
     };
   });
 
-  return _.sortBy(nodes, (item) => item.property);
+  return nodes;
 };
 
 export default makeDiffs;
