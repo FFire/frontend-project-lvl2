@@ -42,9 +42,9 @@ const formatStylish = (diffs) => {
 
         case types.CHANGED: {
           const { oldValue, newValue } = item;
-          const strBefore = `${renderTabs(depth)}${renderType(types.DELETED)}${property}: ${renderValue(oldValue, depth + 1)}`;
-          const strAfter = `\n${renderTabs(depth)}${renderType(types.CREATED)}${property}: ${renderValue(newValue, depth + 1)}`;
-          return `${strBefore}${strAfter}`;
+          const partOne = `${renderTabs(depth)}${renderType(types.DELETED)}${property}: ${renderValue(oldValue, depth + 1)}`;
+          const partTwo = `\n${renderTabs(depth)}${renderType(types.CREATED)}${property}: ${renderValue(newValue, depth + 1)}`;
+          return `${partOne}${partTwo}`;
         }
 
         case types.NESTED: {

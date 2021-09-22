@@ -38,9 +38,9 @@ const formatPlain = (diffs) => {
         case types.CHANGED: {
           const { oldValue, newValue } = item;
 
-          const strPartOne = `${renderPath(currPath)}${renderType(type)} From`;
-          const strPartTwo = `${renderValue(oldValue)} to${renderValue(newValue)}`;
-          return `${strPartOne}${strPartTwo}`;
+          const partOne = `${renderPath(currPath)}${renderType(type)} From`;
+          const partTwo = `${renderValue(oldValue)} to${renderValue(newValue)}`;
+          return `${partOne}${partTwo}`;
         }
 
         case types.NESTED: {
