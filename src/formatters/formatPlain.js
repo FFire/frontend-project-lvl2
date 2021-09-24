@@ -25,16 +25,18 @@ const formatPlain = (diffs) => {
   const iter = (diff, path = []) => diff
     .filter((item) => item.type !== types.UNCHANGED)
     .map((item) => {
-      const { property, type, value } = item;
+      const { property, type } = item;
       const currPath = [...path, property];
 
       switch (type) {
         case types.DELETED:
           return `${renderPath(currPath)}${renderType(type)}`;
 
-        case types.CREATED:
-          return `${renderPath(currPath)}${renderType(type)}${renderValue(value)}`;
+        case types.CREATED: {
+          const { value } = item;
 
+          return `${renderPath(currPath)}${renderType(type)}${renderValue(value)}`;
+        }
         case types.CHANGED: {
           const { oldValue, newValue } = item;
 
