@@ -4,7 +4,8 @@ import _ from 'lodash';
 import types from './nodeTypes.js';
 
 const makeDiffs = (obj1, obj2) => {
-  const keys = _.chain([]).union(_.keys(obj1), _.keys(obj2)).sortBy().value();
+  const unsortedKeys = _.union(_.keys(obj1), _.keys(obj2));
+  const keys = _.sortBy(unsortedKeys);
   const nodes = keys.map((key) => {
     if (!_.has(obj1, key)) {
       return {
