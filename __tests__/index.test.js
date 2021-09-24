@@ -22,7 +22,7 @@ test.each([
   {},
   { fileName1: 'filepath1' },
   { fileName1: 'filepath1', fileName2: 'filepath2' },
-  { fileName1: '__fixtures__/file1.json', fileName2: '__fixtures__/file2.jso' },
+  { fileName1: getRelFileName(fileJSON1), fileName2: getRelFileName('file1.jso') },
 ])('Broken params File-1: [$fileName1] File-2: [$filepath2]', ({ fileName1, fileName2 }) => {
   expect(() => genDiff(fileName1, fileName2)).toThrow();
 });
