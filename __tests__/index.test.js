@@ -6,11 +6,17 @@ import genDiff from '../index.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const fixturesPath = path.resolve(__dirname, '../__fixtures__');
+const fixturesAbsPath = path.resolve(__dirname, '..', '__fixtures__');
 const readFilePath = (absFilepath) => fs.readFileSync(absFilepath, 'utf8');
-const expectedStylish = readFilePath(path.resolve(fixturesPath, 'expectStylish.txt'));
-const expectedPlain = readFilePath(path.resolve(fixturesPath, 'expectPlain.txt'));
-const expectJSON = readFilePath(path.resolve(fixturesPath, 'expectJSON.txt'));
+const getRelFileName = (fileName) => `__fixtures__/${fileName}`;
+const getAbsFileName = (fileName) => path.resolve(fixturesAbsPath, fileName);
+const expectedStylish = readFilePath(getAbsFileName('expectStylish.txt'));
+const expectedPlain = readFilePath(getAbsFileName('expectPlain.txt'));
+const expectJSON = readFilePath(getAbsFileName('expectJSON.txt'));
+const fileJSON1 = 'file1.json';
+const fileJSON2 = 'file2.json';
+const fileYAML1 = 'file1.yaml';
+const fileYAML2 = 'file2.yaml';
 
 test.each([
   {},
@@ -26,25 +32,20 @@ test.each([
   { format: 'json', expected: expectJSON },
   { format: 'stylish', expected: expectedStylish },
   { expected: expectedStylish },
-])('JSON with [$format] Format', ({ format, expected }) => {
-  const fileName1 = '__fixtures__/file1.json';
-  const fileName2 = '__fixtures__/file2.json';
-  expect(genDiff(fileName1, fileName2, format)).toEqual(expected);
-  const absFilePath1 = path.resolve(__dirname, '..', fileName1);
-  const absFilePath2 = path.resolve(__dirname, '..', fileName2);
-  expect(genDiff(absFilePath1, absFilePath2)).toEqual(expectedStylish);
-});
+])('Run with [$format] Format', ({ format, expected }) => {
+  const relFileJSON1 = getRelFileName(fileJSON1);
+  const relFileJSON2 = getRelFileName(fileJSON2);
+  expect(genDiff(relFileJSON1, relFileJSON2, format)).toEqual(expected);
 
-test.each([
-  { format: 'plain', expected: expectedPlain },
-  { format: 'json', expected: expectJSON },
-  { format: 'stylish', expected: expectedStylish },
-  { expected: expectedStylish },
-])('YAML with [$format] Format', ({ format, expected }) => {
-  const fileName1 = '__fixtures__/file1.yaml';
-  const fileName2 = '__fixtures__/file2.yaml';
-  expect(genDiff(fileName1, fileName2, format)).toEqual(expected);
-  const absFilePath1 = path.resolve(__dirname, '..', fileName1);
-  const absFilePath2 = path.resolve(__dirname, '..', fileName2);
-  expect(genDiff(absFilePath1, absFilePath2)).toEqual(expectedStylish);
+  const absFileJSON1 = getAbsFileName(fileJSON1);
+  const absFileJSON2 = getAbsFileName(fileJSON2);
+  expect(genDiff(absFileJSON1, absFileJSON2, format)).toEqual(expected);
+
+  const relFileYAML1 = getRelFileName(fileYAML1);
+  const relFileYAML2 = getRelFileName(fileYAML2);
+  expect(genDiff(relFileYAML1, relFileYAML2, format)).toEqual(expected);
+
+  const absFileYAML1 = getAbsFileName(fileYAML1);
+  const absFileYAML2 = getAbsFileName(fileYAML2);
+  expect(genDiff(absFileYAML1, absFileYAML2, format)).toEqual(expected);
 });

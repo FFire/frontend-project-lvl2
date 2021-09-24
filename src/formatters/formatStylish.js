@@ -32,23 +32,24 @@ const renderValue = (value, depth = 0) => {
 const formatStylish = (diffs) => {
   const iter = (diff, depth = 0) => diff
     .map((item) => {
-      const { property, type, value } = item;
+      const { type } = item;
 
       switch (type) {
         case types.DELETED:
         case types.CREATED:
-        case types.UNCHANGED:
+        case types.UNCHANGED: {
+          const { property, value } = item;
           return `${renderTabs(depth)}${renderType(type)}${property}: ${renderValue(value, depth + 1)}`;
-
+        }
         case types.CHANGED: {
-          const { oldValue, newValue } = item;
+          const { property, oldValue, newValue } = item;
           const partOne = `${renderTabs(depth)}${renderType(types.DELETED)}${property}: ${renderValue(oldValue, depth + 1)}`;
           const partTwo = `\n${renderTabs(depth)}${renderType(types.CREATED)}${property}: ${renderValue(newValue, depth + 1)}`;
           return `${partOne}${partTwo}`;
         }
 
         case types.NESTED: {
-          const { children } = item;
+          const { property, children } = item;
           return `${renderTabs(depth + 1)}${property}: {\n${iter(children, depth + 1)}\n${renderTabs(depth + 1)}}`;
         }
         default:
