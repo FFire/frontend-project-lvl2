@@ -22,8 +22,9 @@ const renderValue = (value, depth = 0) => {
   if (!_.isObject(value)) return String(value);
 
   const lines = _.keys(value).map((key) => {
-    _.noop();
-    return `${renderTabs(depth + 1)}${key}: ${renderValue(value[key], depth + 1)}`;
+    const partOne = `${renderTabs(depth + 1)}${key}: `;
+    const partTwo = `${renderValue(value[key], depth + 1)}`;
+    return `${partOne}${partTwo}`;
   });
 
   return `{\n${lines.join('\n')}\n${renderTabs(depth)}}`;
