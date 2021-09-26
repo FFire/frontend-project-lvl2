@@ -22,9 +22,9 @@ const renderValue = (value, depth = 0) => {
   if (!_.isObject(value)) return String(value);
 
   const lines = _.keys(value).map((key) => {
-    const partOne = `${renderTabs(depth + 1)}${key}: `;
-    const partTwo = `${renderValue(value[key], depth + 1)}`;
-    return `${partOne}${partTwo}`;
+    const partKey = `${renderTabs(depth + 1)}${key}: `;
+    const partValue = `${renderValue(value[key], depth + 1)}`;
+    return `${partKey}${partValue}`;
   });
 
   return `{\n${lines.join('\n')}\n${renderTabs(depth)}}`;
@@ -44,9 +44,9 @@ const formatStylish = (diffs) => {
         }
         case types.CHANGED: {
           const { property, oldValue, newValue } = item;
-          const partOne = `${renderTabs(depth)}${renderType(types.DELETED)}${property}: ${renderValue(oldValue, depth + 1)}`;
-          const partTwo = `\n${renderTabs(depth)}${renderType(types.CREATED)}${property}: ${renderValue(newValue, depth + 1)}`;
-          return `${partOne}${partTwo}`;
+          const partDeleted = `${renderTabs(depth)}${renderType(types.DELETED)}${property}: ${renderValue(oldValue, depth + 1)}`;
+          const partCreated = `\n${renderTabs(depth)}${renderType(types.CREATED)}${property}: ${renderValue(newValue, depth + 1)}`;
+          return `${partDeleted}${partCreated}`;
         }
 
         case types.NESTED: {
